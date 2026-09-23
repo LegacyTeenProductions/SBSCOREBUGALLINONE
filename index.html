@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ballpark Unified Softball Scorebug & Controller</title>
+    <title>Fixed Standalone Softball Scorebug & Controller</title>
     <style>
         /* Base Viewport Layout - Chroma Key Green Floor */
         html, body {
@@ -17,7 +17,7 @@
 
         /* ==========================================================================
            1. OPERATOR INTERFACE DECK (Top 50% of the screen)
-           ========================================================================== */
+           ========================================================================= */
         #operator-deck {
             background-color: #161a1d;
             height: 50vh; width: 100vw;
@@ -55,7 +55,7 @@
             align-items: center; justify-content: center; background-color: transparent;
         }
 
-        /* Scorebug Box Container - Calibrated 2/3 (66%) scaling proportions */
+        /* Scorebug Box Container - Reduced to 2/3 (66%) scaling proportions */
         .scorebug-container {
             display: flex;
             flex-direction: column; 
@@ -70,7 +70,7 @@
             box-sizing: border-box;
         }
 
-        /* Team Row Element Layouts */
+        /* Team Row Layouts */
         .team-row {
             display: flex;
             align-items: center;
@@ -141,7 +141,7 @@
         .dot-grid { display: flex; gap: 0.6vh; margin-left: 1vh; }
         .indicator-dot { width: 1.5vh; height: 1.5vh; border-radius: 50%; background-color: #3d4554; }
         
-        /* Target classes aligned perfectly with engine trackers */
+        /* High-visibility active glows */
         .indicator-dot.b-active { background-color: #00f5d4 !important; box-shadow: 0 0 0.8vh #00f5d4; }
         .indicator-dot.s-active { background-color: #ff5400 !important; box-shadow: 0 0 0.8vh #ff5400; }
         .indicator-dot.o-active { background-color: #fca311 !important; box-shadow: 0 0 0.8vh #fca311; }
@@ -223,3 +223,4 @@
                 <div class="data-segment">
                     <div class="matrix-column">
                         <div class="matrix-row">
+                            <span class="row-header">B</span>

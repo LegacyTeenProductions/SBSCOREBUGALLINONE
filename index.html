@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bulletproof Standalone Softball Scorebug</title>
+    <title>Certified Standalone Softball Scorebug</title>
     <style>
         /* Base Canvas - Green Screen HDMI Ready */
         html, body {
@@ -12,6 +12,7 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             font-weight: 800; color: #ffffff;
             user-select: none; width: 100vw; height: 100vh; overflow: hidden;
+            -webkit-touch-callout: none; -webkit-user-select: none;
         }
 
         /* 1. OPERATOR DECK (Top 50%) */
@@ -30,14 +31,18 @@
         .card-label { font-size: 11px; text-transform: uppercase; color: #adb5bd; }
         .team-input {
             background: #111; border: 1px solid #495057; color: #fff; padding: 6px;
-            width: 80px; border-radius: 4px; font-weight: bold; text-transform: uppercase; text-align: center;
+            width: 100px; border-radius: 4px; font-weight: bold; text-transform: uppercase; text-align: center;
         }
         button {
             background-color: #343a40; color: #ffffff; border: 1px solid #495057;
-            padding: 12px 18px; font-size: 15px; cursor: pointer; border-radius: 6px; font-weight: bold;
+            padding: 14px 22px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
+            touch-action: manipulation;
         }
+        button:active { background-color: #495057; }
         .btn-add { background-color: #2b9348; border-color: #2b9348; }
+        .btn-add:active { background-color: #1b6329; }
         .btn-sub { background-color: #e63946; border-color: #e63946; }
+        .btn-sub:active { background-color: #b81d24; }
 
         /* 2. OVERLAY GRAPHIC (Bottom 50% - Scaled to 2/3 size) */
         #broadcast-canvas {
@@ -51,7 +56,7 @@
             border: 0.8vh solid #1f2833; box-sizing: border-box;
         }
         .team-row { display: flex; align-items: center; justify-content: space-between; height: 9.3vh; border-bottom: 0.5vh solid #2d323f; }
-        .team-title { padding: 0 2.6vh; font-size: 6vh; letter-spacing: 0.2vh; height: 100%; display: flex; align-items: center; flex-grow: 1; font-weight: 900; }
+        .team-title { padding: 0 2.6vh; font-size: 6vh; letter-spacing: 0.2vh; height: 100%; display: flex; align-items: center; flex-grow: 1; font-weight: 900; white-space: nowrap; }
         .away-team .team-title { background-color: #bd1f36; } 
         .home-team .team-title { background-color: #1f4ebd; } 
         .score-val { background-color: #1f232b; font-size: 7.3vh; width: 16.6vh; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
@@ -77,7 +82,7 @@
         .dot-grid { display: flex; gap: 0.6vh; margin-left: 1vh; }
         .indicator-dot { width: 1.5vh; height: 1.5vh; border-radius: 50%; background-color: #3d4554; }
         
-        /* Fixed Colors Using Simple Classes */
+        /* High-Visibility Neon Glows */
         .dot-b.active-dot { background-color: #00f5d4 !important; box-shadow: 0 0 0.8vh #00f5d4; }
         .dot-s.active-dot { background-color: #ff5400 !important; box-shadow: 0 0 0.8vh #ff5400; }
         .dot-o.active-dot { background-color: #fca311 !important; box-shadow: 0 0 0.8vh #fca311; }
@@ -85,50 +90,50 @@
 </head>
 <body>
 
-    <!-- INTERFACE CONTAINER -->
+    <!-- INTERFACE CONTAINER (TOP 50%) -->
     <div id="operator-deck">
         <h2>Softball Manual Control Board</h2>
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Away:</span>
-                <input type="text" class="team-input" id="in-away" value="AWY" oninput="document.getElementById('disp-away-name').innerText = this.value.toUpperCase()">
-                <button class="btn-sub" onclick="updateNum('disp-away-score', -1)">-</button>
-                <button class="btn-add" onclick="updateNum('disp-away-score', 1)">+</button>
+                <input type="text" class="team-input" id="in-away" value="AWY" maxlength="6">
+                <button class="btn-sub" id="btn-away-sub">-</button>
+                <button class="btn-add" id="btn-away-add">+</button>
             </div>
             <div class="card">
                 <span class="card-label">Home:</span>
-                <input type="text" class="team-input" id="in-home" value="HOM" oninput="document.getElementById('disp-home-name').innerText = this.value.toUpperCase()">
-                <button class="btn-sub" onclick="updateNum('disp-home-score', -1)">-</button>
-                <button class="btn-add" onclick="updateNum('disp-home-score', 1)">+</button>
+                <input type="text" class="team-input" id="in-home" value="HOM" maxlength="6">
+                <button class="btn-sub" id="btn-home-sub">-</button>
+                <button class="btn-add" id="btn-home-add">+</button>
             </div>
             <div class="card">
                 <span class="card-label">Inning:</span>
-                <button onclick="toggleArrow()">Top/Bot</button>
-                <button class="btn-sub" onclick="updateNum('disp-inning-num', -1, 1)">-</button>
-                <button class="btn-add" onclick="updateNum('disp-inning-num', 1)">+</button>
+                <button id="btn-inn-arrow">Top/Bot</button>
+                <button class="btn-sub" id="btn-inn-sub">-</button>
+                <button class="btn-add" id="btn-inn-add">+</button>
             </div>
         </div>
 
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Count:</span>
-                <button class="btn-add" onclick="cycleDots('dot-b', 3, true)">+ Ball</button>
-                <button class="btn-add" onclick="cycleDots('dot-s', 2, true, 'dot-b', 'dot-o')">+ Strike</button>
-                <button class="btn-sub" onclick="cycleDots('dot-o', 2, false, 'dot-b', 'dot-s', true)">+ Out</button>
-                <button onclick="clearClass('dot-b'); clearClass('dot-s');">Reset Count</button>
-                <button style="background:#7f8c8d" onclick="location.reload()">Reset Match</button>
+                <button class="btn-add" id="btn-ball-add">+ Ball</button>
+                <button class="btn-add" id="btn-strike-add">+ Strike</button>
+                <button class="btn-sub" id="btn-out-add">+ Out</button>
+                <button id="btn-count-clear">Reset Count</button>
+                <button style="background:#7f8c8d" id="btn-match-reset">Reset Match</button>
             </div>
             <div class="card">
                 <span class="card-label">Bases:</span>
-                <button id="btn-b1" onclick="document.getElementById('disp-base-1').classList.toggle('active-base'); this.style.background = this.style.background === 'rgb(252, 163, 17)' ? '#343a40' : '#fca311'">1st</button>
-                <button id="btn-b2" onclick="document.getElementById('disp-base-2').classList.toggle('active-base'); this.style.background = this.style.background === 'rgb(252, 163, 17)' ? '#343a40' : '#fca311'">2nd</button>
-                <button id="btn-b3" onclick="document.getElementById('disp-base-3').classList.toggle('active-base'); this.style.background = this.style.background === 'rgb(252, 163, 17)' ? '#343a40' : '#fca311'">3rd</button>
-                <button onclick="clearClass('base-pad'); resetBaseButtons();">Clear</button>
+                <button id="btn-b1">1st</button>
+                <button id="btn-b2">2nd</button>
+                <button id="btn-b3">3rd</button>
+                <button id="btn-bases-clear">Clear</button>
             </div>
         </div>
     </div>
 
-    <!-- GRAPHICS CANVAS -->
+    <!-- GRAPHICS CANVAS (BOTTOM 50%) -->
     <div id="broadcast-canvas">
         <div class="scorebug-container">
             <div class="team-row away-team">
@@ -164,8 +169,26 @@
                         <div class="matrix-row">
                             <span class="row-header">S</span>
                             <div class="dot-grid">
-                                <div class="indicator-dot" id="dot-s1"></div>
                                 <div class="indicator-dot dot-s" id="s1"></div>
                                 <div class="indicator-dot dot-s" id="s2"></div>
                             </div>
                         </div>
+                        <div class="matrix-row">
+                            <span class="row-header">O</span>
+                            <div class="dot-grid">
+                                <div class="indicator-dot dot-o" id="o1"></div>
+                                <div class="indicator-dot dot-o" id="o2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NATIVE BROADCAST HARDWARE SCRIPT INTERCEPTOR -->
+    <script>
+        // 1. Core Simple Numeric Modifiers
+        function changeValue(id, amount, minLimit = 0) {
+            let el = document.getElementById(id);
+            let current = parseInt(el.innerText) || 0;

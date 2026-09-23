@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All-In-One Softball Scorebug & Controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ballpark Unified Softball Scorebug & Controller</title>
     <style>
         /* Base Viewport Layout - Chroma Key Green Floor */
         html, body {
-            background-color: #00ff00; /* Pure green screen background */
+            background-color: #00ff00; /* Pure green screen background for HDMI cropping */
             margin: 0; padding: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             font-weight: 800; color: #ffffff;
             user-select: none; width: 100vw; height: 100vh; overflow: hidden;
+            -webkit-touch-callout: none; -webkit-user-select: none;
         }
 
         /* ==========================================================================
@@ -34,11 +35,12 @@
         .card-label { font-size: 12px; text-transform: uppercase; color: #adb5bd; }
         .team-input {
             background: #111; border: 1px solid #495057; color: #fff; padding: 8px;
-            width: 90px; border-radius: 6px; font-weight: bold; text-transform: uppercase; text-align: center; font-size: 14px;
+            width: 100px; border-radius: 6px; font-weight: bold; text-transform: uppercase; text-align: center; font-size: 14px;
         }
         button {
             background-color: #343a40; color: #ffffff; border: 1px solid #495057;
-            padding: 12px 20px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
+            padding: 14px 22px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
+            touch-action: manipulation;
         }
         button:active { background-color: #495057; }
         .btn-add { background-color: #2b9348; border-color: #2b9348; }
@@ -53,7 +55,7 @@
             align-items: center; justify-content: center; background-color: transparent;
         }
 
-        /* Scorebug Box Container - Reduced to 2/3 (66%) scaling proportions */
+        /* Scorebug Box Container - Calibrated 2/3 (66%) scaling proportions */
         .scorebug-container {
             display: flex;
             flex-direction: column; 
@@ -61,7 +63,6 @@
             border-radius: 2vh;
             box-shadow: 0 2.5vh 6vh rgba(0,0,0,0.8);
             
-            /* Clean 2/3 dimensional limits */
             width: 83.3vh; 
             height: 29.3vh; 
             overflow: hidden;
@@ -133,63 +134,65 @@
         .base-pad.b-3 { bottom: 0; left: 0; }
         .base-pad.occupied { background-color: #fca311; box-shadow: 0 0 1.3vh #fca311; }
 
-        /* BSO Columns */
+        /* BSO Matrix Alignment */
         .matrix-column { display: flex; flex-direction: column; gap: 0.5vh; font-size: 1.5vh; color: #8d99ae; }
         .matrix-row { display: flex; align-items: center; }
         .row-header { width: 1.6vh; font-size: 1.5vh; font-weight: bold; text-align: center; }
         .dot-grid { display: flex; gap: 0.6vh; margin-left: 1vh; }
         .indicator-dot { width: 1.5vh; height: 1.5vh; border-radius: 50%; background-color: #3d4554; }
-        .indicator-dot.b-active { background-color: #00f5d4; }
-        .indicator-dot.s-active { background-color: #ff5400; }
-        .indicator-dot.o-active { background-color: #fca311; }
+        
+        /* Target classes aligned perfectly with engine trackers */
+        .indicator-dot.b-active { background-color: #00f5d4 !important; box-shadow: 0 0 0.8vh #00f5d4; }
+        .indicator-dot.s-active { background-color: #ff5400 !important; box-shadow: 0 0 0.8vh #ff5400; }
+        .indicator-dot.o-active { background-color: #fca311 !important; box-shadow: 0 0 0.8vh #fca311; }
     </style>
 </head>
 <body>
 
-    <!-- CONTROL PANEL LAYER -->
+    <!-- SECTION 1: OPERATOR CONTROL PANEL LAYER -->
     <div id="operator-deck">
         <h2>Softball Live Overlay Workspace</h2>
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Away Name:</span>
-                <input type="text" class="team-input" id="input-away-name" value="AWY" maxlength="6" oninput="updateTeamName('away')">
-                <button class="btn-sub" onclick="adjustScore('away', -1)">-</button>
-                <button class="btn-add" onclick="adjustScore('away', 1)">+</button>
+                <input type="text" class="team-input" id="input-away-name" value="AWY" maxlength="6">
+                <button class="btn-sub" id="btn-away-minus">-</button>
+                <button class="btn-add" id="btn-away-plus">+</button>
             </div>
             <div class="card">
                 <span class="card-label">Home Name:</span>
-                <input type="text" class="team-input" id="input-home-name" value="HOM" maxlength="6" oninput="updateTeamName('home')">
-                <button class="btn-sub" onclick="adjustScore('home', -1)">-</button>
-                <button class="btn-add" onclick="adjustScore('home', 1)">+</button>
+                <input type="text" class="team-input" id="input-home-name" value="HOM" maxlength="6">
+                <button class="btn-sub" id="btn-home-minus">-</button>
+                <button class="btn-add" id="btn-home-plus">+</button>
             </div>
             <div class="card">
                 <span class="card-label">Inning</span>
-                <button onclick="toggleInningHalf()">Top/Bot</button>
-                <button class="btn-sub" onclick="adjustInningNum(-1)">-</button>
-                <button class="btn-add" onclick="adjustInningNum(1)">+</button>
+                <button id="btn-toggle-inning">Top/Bot</button>
+                <button class="btn-sub" id="btn-inn-minus">-</button>
+                <button class="btn-add" id="btn-inn-plus">+</button>
             </div>
         </div>
 
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Plate Count</span>
-                <button class="btn-add" onclick="handleCount('ball')">+ Ball</button>
-                <button class="btn-add" onclick="handleCount('strike')">+ Strike</button>
-                <button class="btn-sub" onclick="handleCount('out')">+ Out</button>
-                <button onclick="resetCount()">Clear Count</button>
-                <button class="btn-reset" onclick="resetFullMatch()">Reset Match</button>
+                <button class="btn-add" id="btn-count-ball">+ Ball</button>
+                <button class="btn-add" id="btn-count-strike">+ Strike</button>
+                <button class="btn-sub" id="btn-count-out">+ Out</button>
+                <button id="btn-clear-count">Clear Count</button>
+                <button class="btn-reset" id="btn-reset-match">Reset Match</button>
             </div>
             <div class="card">
                 <span class="card-label">Bases</span>
-                <button id="ctrl-b1" onclick="toggleBaseState(1)">1st</button>
-                <button id="ctrl-b2" onclick="toggleBaseState(2)">2nd</button>
-                <button id="ctrl-b3" onclick="toggleBaseState(3)">3rd</button>
-                <button onclick="clearAllBases()">Clear</button>
+                <button id="ctrl-b1">1st</button>
+                <button id="ctrl-b2">2nd</button>
+                <button id="ctrl-b3">3rd</button>
+                <button id="btn-clear-bases">Clear</button>
             </div>
         </div>
     </div>
 
-    <!-- GRAPHICS DISPLAY LAYER -->
+    <!-- SECTION 2: GRAPHICS DISPLAY OVERLAY LAYER -->
     <div id="broadcast-canvas">
         <div class="scorebug-container">
             
@@ -220,6 +223,3 @@
                 <div class="data-segment">
                     <div class="matrix-column">
                         <div class="matrix-row">
-                            <span class="row-header">B</span>
-
- 

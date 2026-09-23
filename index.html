@@ -198,7 +198,7 @@
             border: 1px solid #333;
             border-radius: 8px;
             padding: 20px;
-            max-width: 800px;
+            max-width: 900px;
         }
 
         .control-panel h2 {
@@ -213,8 +213,8 @@
         .ctrl-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .ctrl-group {
@@ -222,7 +222,7 @@
             padding: 12px;
             border-radius: 6px;
             flex: 1;
-            min-width: 180px;
+            min-width: 250px;
         }
 
         .ctrl-group h3 {
@@ -247,7 +247,8 @@
             border-radius: 4px;
             font-family: sans-serif;
             font-weight: bold;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s;
+            flex: 1;
         }
 
         button:hover { background: #555; }
@@ -257,7 +258,8 @@
         button.plus:hover { background: #218838; }
         button.minus { background: #dc3545; }
         button.minus:hover { background: #c82333; }
-        button.reset-btn { background: #6c757d; width: 100%; margin-top: 10px;}
+        button.reset-btn { background: #6c757d; width: 100%; margin-top: 15px; padding: 10px;}
+        button.reset-btn:hover { background: #5a6268; }
 
         .team-settings {
             display: flex;
@@ -269,10 +271,11 @@
             background: #333;
             border: 1px solid #444;
             color: white;
-            padding: 6px;
+            padding: 8px;
             border-radius: 4px;
-            width: 120px;
+            width: 150px;
             font-family: sans-serif;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -346,8 +349,3 @@
         <div class="team-settings">
             <input type="text" id="inputAway" value="AWAY" oninput="updateNames()" placeholder="Away Team">
             <input type="text" id="inputHome" value="HOME" oninput="updateNames()" placeholder="Home Team">
-        </div>
-
-        <div class="ctrl-row">
-            <!-- Score Controls -->
-            <div class="ctrl-group">

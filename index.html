@@ -3,215 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Certified Standalone Softball Scorebug Overlay System</title>
+    <title>Bulletproof Standalone Softball Scorebug</title>
     <style>
-        /* Base Viewport Layout - Chroma Key Green Floor */
+        /* Base Canvas - Green Screen HDMI Ready */
         html, body {
-            background-color: #00ff00; /* Pure green screen background for HDMI cropping */
+            background-color: #00ff00; 
             margin: 0; padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             font-weight: 800; color: #ffffff;
             user-select: none; width: 100vw; height: 100vh; overflow: hidden;
-            -webkit-touch-callout: none; -webkit-user-select: none;
         }
 
-        /* ==========================================================================
-           1. OPERATOR INTERFACE DECK (Top 50% of the screen)
-           ========================================================================== */
+        /* 1. OPERATOR DECK (Top 50%) */
         #operator-deck {
             background-color: #161a1d;
             height: 50vh; width: 100vw;
-            padding: 20px; box-sizing: border-box;
+            padding: 15px; box-sizing: border-box;
             border-bottom: 5px dashed #ba181b;
             display: flex; flex-direction: column; justify-content: space-between;
-            position: absolute; top: 0; left: 0; z-index: 10;
         }
-        h2 { margin: 0; color: #adb5bd; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
         .control-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .card {
-            background: #22252a; padding: 12px 16px; border-radius: 8px;
-            display: flex; align-items: center; gap: 12px; border: 1px solid #2f343c;
+            background: #22252a; padding: 10px 14px; border-radius: 8px;
+            display: flex; align-items: center; gap: 10px; border: 1px solid #2f343c;
         }
-        .card-label { font-size: 12px; text-transform: uppercase; color: #adb5bd; }
+        .card-label { font-size: 11px; text-transform: uppercase; color: #adb5bd; }
         .team-input {
-            background: #111; border: 1px solid #495057; color: #fff; padding: 8px;
-            width: 100px; border-radius: 6px; font-weight: bold; text-transform: uppercase; text-align: center; font-size: 14px;
+            background: #111; border: 1px solid #495057; color: #fff; padding: 6px;
+            width: 80px; border-radius: 4px; font-weight: bold; text-transform: uppercase; text-align: center;
         }
         button {
             background-color: #343a40; color: #ffffff; border: 1px solid #495057;
-            padding: 14px 22px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
-            touch-action: manipulation;
+            padding: 12px 18px; font-size: 15px; cursor: pointer; border-radius: 6px; font-weight: bold;
         }
-        button:active { background-color: #495057; }
         .btn-add { background-color: #2b9348; border-color: #2b9348; }
         .btn-sub { background-color: #e63946; border-color: #e63946; }
-        .btn-reset { background-color: #7f8c8d; border-color: #7f8c8d; }
 
-        /* ==========================================================================
-           2. BROADCAST OUTPUT LAYER VIEW (Bottom 50% of the screen)
-           ========================================================================== */
+        /* 2. OVERLAY GRAPHIC (Bottom 50% - Scaled to 2/3 size) */
         #broadcast-canvas {
-            display: flex; height: 50vh; width: 100vw; position: absolute; bottom: 0; left: 0;
+            display: flex; height: 50vh; width: 100vw;
             align-items: center; justify-content: center; background-color: transparent;
         }
-
-        /* Scorebug Box Container - Reduced to 2/3 (66%) scaling proportions */
         .scorebug-container {
-            display: flex;
-            flex-direction: column; 
-            background-color: #0b0c10;
-            border-radius: 2vh;
-            box-shadow: 0 2.5vh 6vh rgba(0,0,0,0.8);
-            
-            width: 83.3vh; 
-            height: 29.3vh; 
-            overflow: hidden;
-            border: 0.8vh solid #1f2833;
-            box-sizing: border-box;
+            display: flex; flex-direction: column; 
+            background-color: #0b0c10; border-radius: 2vh;
+            width: 83.3vh; height: 29.3vh; overflow: hidden;
+            border: 0.8vh solid #1f2833; box-sizing: border-box;
         }
-
-        /* Team Row Layouts */
-        .team-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 9.3vh; 
-            border-bottom: 0.5vh solid #2d323f;
-        }
-        .team-title {
-            padding: 0 2.6vh;
-            font-size: 6vh; 
-            letter-spacing: 0.2vh;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            flex-grow: 1;
-            font-weight: 900;
-            white-space: nowrap;
-        }
+        .team-row { display: flex; align-items: center; justify-content: space-between; height: 9.3vh; border-bottom: 0.5vh solid #2d323f; }
+        .team-title { padding: 0 2.6vh; font-size: 6vh; letter-spacing: 0.2vh; height: 100%; display: flex; align-items: center; flex-grow: 1; font-weight: 900; }
         .away-team .team-title { background-color: #bd1f36; } 
         .home-team .team-title { background-color: #1f4ebd; } 
+        .score-val { background-color: #1f232b; font-size: 7.3vh; width: 16.6vh; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
         
-        .score-val {
-            background-color: #1f232b;
-            font-size: 7.3vh; 
-            width: 16.6vh;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-        }
-
-        /* Bottom Status Row */
-        .status-row {
-            display: flex;
-            align-items: center;
-            height: 9.1vh;
-            background-color: #151922;
-        }
-
-        .data-segment {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            flex: 1;
-        }
-        .data-segment:not(:last-child) {
-            border-right: 0.5vh solid #2d323f;
-        }
-
-        /* Inning Indicators */
-        .arrow-indicator { font-size: 3vh; margin-right: 1vh; color: #fca311; line-height: 1; }
-        .inning-num { font-size: 4.3vh; font-weight: 900; line-height: 1; }
+        .status-row { display: flex; align-items: center; height: 9.1vh; background-color: #151922; }
+        .data-segment { display: flex; align-items: center; justify-content: center; height: 100%; flex: 1; }
+        .data-segment:not(:last-child) { border-right: 0.5vh solid #2d323f; }
+        .arrow-indicator { font-size: 3vh; margin-right: 1vh; color: #fca311; }
+        .inning-num { font-size: 4.3vh; font-weight: 900; }
         
-        /* Diamond Runners */
+        /* Diamond Bases */
         .diamond-wrap { position: relative; width: 5.3vh; height: 5.3vh; transform: rotate(45deg); }
         .base-pad { position: absolute; width: 2.1vh; height: 2.1vh; background-color: #454d5a; border: 0.3vh solid #151922; border-radius: 0.3vh; }
         .base-pad.b-1 { top: 0; right: 0; }
         .base-pad.b-2 { top: 0; left: 0; }
         .base-pad.b-3 { bottom: 0; left: 0; }
-        .base-pad.occupied { background-color: #fca311; box-shadow: 0 0 1.3vh #fca311; }
+        .base-pad.active-base { background-color: #fca311 !important; box-shadow: 0 0 1.3vh #fca311; }
 
-        /* BSO Matrix Alignment */
+        /* BSO Count Layout */
         .matrix-column { display: flex; flex-direction: column; gap: 0.5vh; font-size: 1.5vh; color: #8d99ae; }
         .matrix-row { display: flex; align-items: center; }
         .row-header { width: 1.6vh; font-size: 1.5vh; font-weight: bold; text-align: center; }
         .dot-grid { display: flex; gap: 0.6vh; margin-left: 1vh; }
         .indicator-dot { width: 1.5vh; height: 1.5vh; border-radius: 50%; background-color: #3d4554; }
         
-        /* High-visibility active glows */
-        .indicator-dot.b-active { background-color: #00f5d4 !important; box-shadow: 0 0 0.8vh #00f5d4 !important; }
-        .indicator-dot.s-active { background-color: #ff5400 !important; box-shadow: 0 0 0.8vh #ff5400 !important; }
-        .indicator-dot.o-active { background-color: #fca311 !important; box-shadow: 0 0 0.8vh #fca311 !important; }
+        /* Fixed Colors Using Simple Classes */
+        .dot-b.active-dot { background-color: #00f5d4 !important; box-shadow: 0 0 0.8vh #00f5d4; }
+        .dot-s.active-dot { background-color: #ff5400 !important; box-shadow: 0 0 0.8vh #ff5400; }
+        .dot-o.active-dot { background-color: #fca311 !important; box-shadow: 0 0 0.8vh #fca311; }
     </style>
 </head>
 <body>
 
-    <!-- SECTION 1: OPERATOR CONTROL PANEL LAYER -->
+    <!-- INTERFACE CONTAINER -->
     <div id="operator-deck">
-        <h2>Softball Live Overlay Workspace</h2>
+        <h2>Softball Manual Control Board</h2>
         <div class="control-row">
             <div class="card">
-                <span class="card-label">Away Name:</span>
-                <input type="text" class="team-input" id="input-away-name" value="AWY" maxlength="6">
-                <button class="btn-sub" id="btn-away-minus">-</button>
-                <button class="btn-add" id="btn-away-plus">+</button>
+                <span class="card-label">Away:</span>
+                <input type="text" class="team-input" id="in-away" value="AWY" oninput="document.getElementById('disp-away-name').innerText = this.value.toUpperCase()">
+                <button class="btn-sub" onclick="updateNum('disp-away-score', -1)">-</button>
+                <button class="btn-add" onclick="updateNum('disp-away-score', 1)">+</button>
             </div>
             <div class="card">
-                <span class="card-label">Home Name:</span>
-                <input type="text" class="team-input" id="input-home-name" value="HOM" maxlength="6">
-                <button class="btn-sub" id="btn-home-minus">-</button>
-                <button class="btn-add" id="btn-home-plus">+</button>
+                <span class="card-label">Home:</span>
+                <input type="text" class="team-input" id="in-home" value="HOM" oninput="document.getElementById('disp-home-name').innerText = this.value.toUpperCase()">
+                <button class="btn-sub" onclick="updateNum('disp-home-score', -1)">-</button>
+                <button class="btn-add" onclick="updateNum('disp-home-score', 1)">+</button>
             </div>
             <div class="card">
-                <span class="card-label">Inning</span>
-                <button id="btn-toggle-inning">Top/Bot</button>
-                <button class="btn-sub" id="btn-inn-minus">-</button>
-                <button class="btn-add" id="btn-inn-plus">+</button>
+                <span class="card-label">Inning:</span>
+                <button onclick="toggleArrow()">Top/Bot</button>
+                <button class="btn-sub" onclick="updateNum('disp-inning-num', -1, 1)">-</button>
+                <button class="btn-add" onclick="updateNum('disp-inning-num', 1)">+</button>
             </div>
         </div>
 
         <div class="control-row">
             <div class="card">
-                <span class="card-label">Plate Count</span>
-                <button class="btn-add" id="btn-count-ball">+ Ball</button>
-                <button class="btn-add" id="btn-count-strike">+ Strike</button>
-                <button class="btn-sub" id="btn-count-out">+ Out</button>
-                <button id="btn-clear-count">Clear Count</button>
-                <button class="btn-reset" id="btn-reset-match">Reset Match</button>
+                <span class="card-label">Count:</span>
+                <button class="btn-add" onclick="cycleDots('dot-b', 3, true)">+ Ball</button>
+                <button class="btn-add" onclick="cycleDots('dot-s', 2, true, 'dot-b', 'dot-o')">+ Strike</button>
+                <button class="btn-sub" onclick="cycleDots('dot-o', 2, false, 'dot-b', 'dot-s', true)">+ Out</button>
+                <button onclick="clearClass('dot-b'); clearClass('dot-s');">Reset Count</button>
+                <button style="background:#7f8c8d" onclick="location.reload()">Reset Match</button>
             </div>
             <div class="card">
-                <span class="card-label">Bases</span>
-                <button id="ctrl-b1">1st</button>
-                <button id="ctrl-b2">2nd</button>
-                <button id="ctrl-b3">3rd</button>
-                <button id="btn-clear-bases">Clear</button>
+                <span class="card-label">Bases:</span>
+                <button id="btn-b1" onclick="document.getElementById('disp-base-1').classList.toggle('active-base'); this.style.background = this.style.background === 'rgb(252, 163, 17)' ? '#343a40' : '#fca311'">1st</button>
+                <button id="btn-b2" onclick="document.getElementById('disp-base-2').classList.toggle('active-base'); this.style.background = this.style.background === 'rgb(252, 163, 17)' ? '#343a40' : '#fca311'">2nd</button>
+                <button id="btn-b3" onclick="document.getElementById('disp-base-3').classList.toggle('active-base'); this.style.background = this.style.background === 'rgb(252, 163, 17)' ? '#343a40' : '#fca311'">3rd</button>
+                <button onclick="clearClass('base-pad'); resetBaseButtons();">Clear</button>
             </div>
         </div>
     </div>
 
-    <!-- SECTION 2: GRAPHICS DISPLAY OVERLAY LAYER -->
+    <!-- GRAPHICS CANVAS -->
     <div id="broadcast-canvas">
         <div class="scorebug-container">
-            
             <div class="team-row away-team">
                 <div class="team-title" id="disp-away-name">AWY</div>
                 <div class="score-val" id="disp-away-score">0</div>
             </div>
-
             <div class="team-row home-team">
                 <div class="team-title" id="disp-home-name">HOM</div>
                 <div class="score-val" id="disp-home-score">0</div>
             </div>
-
             <div class="status-row">
                 <div class="data-segment">
                     <span class="arrow-indicator" id="disp-inning-arrow">&#9650;</span>
                     <span class="inning-num" id="disp-inning-num">1</span>
                 </div>
-
                 <div class="data-segment">
                     <div class="diamond-wrap">
                         <div class="base-pad b-2" id="disp-base-2"></div>
@@ -219,7 +151,21 @@
                         <div class="base-pad b-3" id="disp-base-3"></div>
                     </div>
                 </div>
-
                 <div class="data-segment">
                     <div class="matrix-column">
                         <div class="matrix-row">
+                            <span class="row-header">B</span>
+                            <div class="dot-grid">
+                                <div class="indicator-dot dot-b" id="b1"></div>
+                                <div class="indicator-dot dot-b" id="b2"></div>
+                                <div class="indicator-dot dot-b" id="b3"></div>
+                            </div>
+                        </div>
+                        <div class="matrix-row">
+                            <span class="row-header">S</span>
+                            <div class="dot-grid">
+                                <div class="indicator-dot" id="dot-s1"></div>
+                                <div class="indicator-dot dot-s" id="s1"></div>
+                                <div class="indicator-dot dot-s" id="s2"></div>
+                            </div>
+                        </div>

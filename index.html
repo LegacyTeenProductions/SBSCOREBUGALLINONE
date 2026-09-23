@@ -140,9 +140,42 @@
         .row-header { width: 1.6vh; font-size: 1.5vh; font-weight: bold; text-align: center; }
         .dot-grid { display: flex; gap: 0.6vh; margin-left: 1vh; }
         .indicator-dot { width: 1.5vh; height: 1.5vh; border-radius: 50%; background-color: #3d4554; }
+
         
-        /* High-visibility active glows */
-                    
+        // REPLACE ONLY THE RENDER FUNCTION WITH THIS FIOM LOGIC MODEL
+function render() {
+    // 1. Refresh textual and numeric readout layers safely
+    document.getElementById('disp-away-name').innerText = game.awayName;
+    document.getElementById('disp-home-name').innerText = game.homeName;
+    document.getElementById('disp-away-score').innerText = game.away;
+    document.getElementById('disp-home-score').innerText = game.home;
+    document.getElementById('disp-inning-num').innerText = game.inning;
+    document.getElementById('disp-inning-arrow').innerHTML = game.isTop ? '&#9650;' : '&#9660;';
+
+    // 2. Map and apply Ball indicator active status (B)
+    document.getElementById('dot-b1').classList.toggle('b-active', game.b >= 1);
+    document.getElementById('dot-b2').classList.toggle('b-active', game.b >= 2);
+    document.getElementById('dot-b3').classList.toggle('b-active', game.b >= 3);
+
+    // 3. Map and apply Strike indicator active status (S)
+    document.getElementById('dot-s1').classList.toggle('s-active', game.s >= 1);
+    document.getElementById('dot-s2').classList.toggle('s-active', game.s >= 2);
+
+    // 4. Map and apply Out indicator active status (O)
+    document.getElementById('dot-o1').classList.toggle('o-active', game.o >= 1);
+    document.getElementById('dot-o2').classList.toggle('o-active', game.o >= 2);
+
+    // 5. Corrected Base Mapping Loops - Targets individual keys to prevent script crashes
+    for (let i = 1; i <= 3; i++) {
+        document.getElementById(`disp-base-${i}`).classList.toggle('occupied', game.runners[i] === true);
+        const ctrlBtn = document.getElementById(`ctrl-b${i}`);
+        if (ctrlBtn) {
+            ctrlBtn.style.background = game.runners[i] ? '#fca311' : '#343a40';
+        }
+    }
+}
+
+            /* High-visibility active glows */            
         .indicator-dot.b-active { 
             background-color: #00f5d4 !important; 
             box-shadow: 0 0 1.2vh #00f5d4 !important; 

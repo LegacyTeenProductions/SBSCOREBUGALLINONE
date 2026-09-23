@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-In-One Softball Scorebug & Controller</title>
+    <style>
+        /* Base Viewport Layout - Chroma Key Green Floor */
+        html, body {
+            background-color: #00ff00; /* Pure green screen background for HDMI cropping */
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-weight: 800; color: #ffffff;
+            user-select: none; width: 100vw; height: 100vh; overflow: hidden;
+        }
+
+        /* ==========================================================================
+           1. OPERATOR INTERFACE DECK (Top 50% of the screen)
+           ========================================================================== */
+        #operator-deck {
+            background-color: #161a1d;
+            height: 50vh; width: 100vw;
+            padding: 20px; box-sizing: border-box;
+            border-bottom: 5px dashed #ba181b;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: absolute; top: 0; left: 0; z-index: 10;
+        }
+        h2 { margin: 0; color: #adb5bd; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+        .control-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .card {
+            background: #22252a; padding: 12px 16px; border-radius: 8px;
+            display: flex; align-items: center; gap: 12px; border: 1px solid #2f343c;
+        }
+        .card-label { font-size: 12px; text-transform: uppercase; color: #adb5bd; }
+        .team-input {
+            background: #111; border: 1px solid #495057; color: #fff; padding: 8px;
+            width: 90px; border-radius: 6px; font-weight: bold; text-transform: uppercase; text-align: center; font-size: 14px;
+        }
+        button {
+            background-color: #343a40; color: #ffffff; border: 1px solid #495057;
+            padding: 12px 20px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
+        }
+        button:active { background-color: #495057; }
+        .btn-add { background-color: #2b9348; border-color: #2b9348; }
+        .btn-sub { background-color: #e63946; border-color: #e63946; }
+        .btn-reset { background-color: #7f8c8d; border-color: #7f8c8d; }
+
+        /* ==========================================================================
+           2. BROADCAST OUTPUT LAYER VIEW (Bottom 50% of the screen)
+           ========================================================================== */
+        #broadcast-canvas {
+            display: flex; height: 50vh; width: 100vw; position: absolute; bottom: 0; left: 0;
+            align-items: center; justify-content: center; background-color: transparent;
+        }
+
+        /* Large Rectangular Scorebug Box Container */
+        .scorebug-container {
+            display: flex;
+            flex-direction: column; 
+            background-color: #0b0c10;
+            border-radius: 3vh;
+            box-shadow: 0 4vh 10vh rgba(0,0,0,0.8);
+            
+            /* Perfectly widened rectangular dimensions */
+            width: 125vh; 
+            height: 44vh; 
+            overflow: hidden;
+            border: 1.2vh solid #1f2833;
+            box-sizing: border-box;
+        }
+
+        /* Team Row Element Layouts */
+        .team-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 14vh; 
+            border-bottom: 0.8vh solid #2d323f;
+        }
+        .team-title {
+            padding: 0 4vh;
+            font-size: 9vh; 
+            letter-spacing: 0.3vh;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+        .away-team .team-title { background-color: #bd1f36; } 
+        .home-team .team-title { background-color: #1f4ebd; } 
+        
+        .score-val {
+            background-color: #1f232b;
+            font-size: 11vh; 
+            width: 25vh;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+
+        /* Bottom Game Stats Data Bar (Takes up remaining space) */
+        .status-row {
+            display: flex;
+            align-items: center;
+            height: 13.6vh;
+            background-color: #151922;
+        }
+
+        .data-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            flex: 1;
+        }
+        .data-segment:not(:last-child) {
+            border-right: 0.8vh solid #2d323f;
+        }
+
+        /* Inning layouts */
+        .arrow-indicator { font-size: 4.5vh; margin-right: 1.5vh; color: #fca311; line-height: 1; }
+        .inning-num { font-size: 6.5vh; font-weight: 900; line-height: 1; }
+        
+        /* Diamond Runners Mapping */
+        .diamond-wrap { position: relative; width: 8vh; height: 8vh; transform: rotate(45deg); }
+        .base-pad { position: absolute; width: 3.2vh; height: 3.2vh; background-color: #454d5a; border: 0.5vh solid #151922; border-radius: 0.4vh; }
+        .base-pad.b-1 { top: 0; right: 0; }
+        .base-pad.b-2 { top: 0; left: 0; }
+        .base-pad.b-3 { bottom: 0; left: 0; }
+        .base-pad.occupied { background-color: #fca311; box-shadow: 0 0 2vh #fca311; }
+
+        /* BSO Count Tracking Matrix Layout */
+        .matrix-column { display: flex; flex-direction: column; gap: 0.8vh; font-size: 2.2vh; color: #8d99ae; }
+        .matrix-row { display: flex; align-items: center; }
+        .row-header { width: 2.5vh; font-size: 2.2vh; font-weight: bold; text-align: center; }
+        .dot-grid { display: flex; gap: 1vh; margin-left: 1.5vh; }
+        .indicator-dot { width: 2.2vh; height: 2.2vh; border-radius: 50%; background-color: #3d4554; }
+        .indicator-dot.b-active { background-color: #00f5d4; }
+        .indicator-dot.s-active { background-color: #ff5400; }
+        .indicator-dot.o-active { background-color: #fca311; }
+    </style>
+</head>
+<body>
+
+    <!-- SECTION A: OPERATOR CONTROL PANEL DISPLAY -->
+    <div id="operator-deck">
+        <h2>Softball Live Overlay Workspace</h2>
+        <div class="control-row">
+            <div class="card">
+                <span class="card-label">Away Name:</span>
+                <input type="text" class="team-input" id="input-away-name" value="AWY" maxlength="6" oninput="updateTeamName('away')">
+                <button class="btn-sub" onclick="adjustScore('away', -1)">-</button>
+                <button class="btn-add" onclick="adjustScore('away', 1)">+</button>
+            </div>
+            <div class="card">
+                <span class="card-label">Home Name:</span>
+                <input type="text" class="team-input" id="input-home-name" value="HOM" maxlength="6" oninput="updateTeamName('home')">
+                <button class="btn-sub" onclick="adjustScore('home', -1)">-</button>
+                <button class="btn-add" onclick="adjustScore('home', 1)">+</button>
+            </div>
+            <div class="card">
+                <span class="card-label">Inning</span>
+                <button onclick="toggleInningHalf()">Top/Bot</button>
+                <button class="btn-sub" onclick="adjustInningNum(-1)">-</button>
+                <button class="btn-add" onclick="adjustInningNum(1)">+</button>
+            </div>
+        </div>
+
+        <div class="control-row">
+            <div class="card">
+                <span class="card-label">Plate Count</span>
+                <button class="btn-add" onclick="handleCount('ball')">+ Ball</button>
+                <button class="btn-add" onclick="handleCount('strike')">+ Strike</button>
+                <button class="btn-sub" onclick="handleCount('out')">+ Out</button>
+                <button onclick="resetCount()">Clear Count</button>
+                <button class="btn-reset" onclick="resetFullMatch()">Reset Match</button>
+            </div>
+            <div class="card">
+                <span class="card-label">Bases</span>
+                <button id="ctrl-b1" onclick="toggleBaseState(1)">1st</button>
+                <button id="ctrl-b2" onclick="toggleBaseState(2)">2nd</button>
+                <button id="ctrl-b3" onclick="toggleBaseState(3)">3rd</button>
+                <button onclick="clearAllBases()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION B: STREAM OVERLAY OUTPUT DISPLAY -->
+    <div id="broadcast-canvas">
+        <div class="scorebug-container">
+            
+            <div class="team-row away-team">
+                <div class="team-title" id="disp-away-name">AWY</div>
+                <div class="score-val" id="disp-away-score">0</div>
+            </div>
+
+            <div class="team-row home-team">
+                <div class="team-title" id="disp-home-name">HOM</div>
+                <div class="score-val" id="disp-home-score">0</div>
+            </div>
+
+            <div class="status-row">
+                <div class="data-segment">
+                    <span class="arrow-indicator" id="disp-inning-arrow">&#9650;</span>
+                    <span class="inning-num" id="disp-inning-num">1</span>
+                </div>
+
+                <div class="data-segment">
+                    <div class="diamond-wrap">
+                        <div class="base-pad b-2" id="disp-base-2"></div>
+                        <div class="base-pad b-1" id="disp-base-1"></div>
+                        <div class="base-pad b-3" id="disp-base-3"></div>
+                    </div>
+                </div>
+
+                <div class="data-segment">
+                    <div class="matrix-column">
+                        <div class="matrix-row">

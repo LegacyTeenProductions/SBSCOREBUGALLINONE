@@ -310,7 +310,7 @@
                 </div>
             </div>
 
-            <!-- Inning & Outs -->
+            <!-- Inning & Outs Section -->
             <div class="game-state-block">
                 <div class="inning-indicator">
                     <span class="arrow" id="bugInningArrow">▲</span>
@@ -322,13 +322,13 @@
                 </div>
             </div>
 
-            <!-- Count (Balls / Strikes) -->
+            <!-- Count (Balls / Strikes) Section -->
             <div class="count-block">
                 <div>B: <span id="bugBalls">0</span></div>
                 <div>S: <span id="bugStrikes">0</span></div>
             </div>
 
-            <!-- Diamond Base Tracking -->
+            <!-- Diamond Base Tracking Graphic -->
             <div class="diamond-block">
                 <div class="diamond">
                     <div class="base second" id="base2"></div>
@@ -341,16 +341,15 @@
     </div>
 
 
-    <!-- 2. THE OPERATOR CONTROL PANEL -->
+    <!-- 2. THE INTERACTIVE CONTROL PANEL -->
     <div class="control-panel">
         <h2>Scorebug Control Panel</h2>
         
-        <!-- Quick Name Config -->
+        <!-- Quick Name Configuration Inputs -->
         <div class="team-settings">
             <input type="text" id="inputAway" value="AWAY" oninput="updateNames()" placeholder="Away Team">
             <input type="text" id="inputHome" value="HOME" oninput="updateNames()" placeholder="Home Team">
         </div>
 
-        <!-- Upper Row: Scoring Configurations -->
+        <!-- Upper Row: Scoring and Error Triggers -->
         <div class="ctrl-row">
-            <!-- Away Panel -->

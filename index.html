@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Certified Standalone Softball Scorebug</title>
+    <title>Definitive Standalone Softball Scorebug</title>
     <style>
         /* Base Canvas - Green Screen HDMI Ready */
         html, body {
@@ -35,6 +35,7 @@
         button {
             background-color: #343a40; color: #ffffff; border: 1px solid #495057;
             padding: 14px 22px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
+            touch-action: manipulation;
         }
         button:active { background-color: #495057; }
         .btn-add { background-color: #2b9348; border-color: #2b9348; }
@@ -92,39 +93,39 @@
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Away:</span>
-                <input type="text" class="team-input" id="in-away" value="AWY" maxlength="6">
-                <button class="btn-sub" id="btn-away-sub">-</button>
-                <button class="btn-add" id="btn-away-add">+</button>
+                <input type="text" class="team-input" id="in-away" value="AWY" maxlength="6" oninput="document.getElementById('disp-away-name').innerText = this.value.toUpperCase()">
+                <button class="btn-sub" ontouchend="changeValue('disp-away-score', -1)" onclick="changeValue('disp-away-score', -1)">-</button>
+                <button class="btn-add" ontouchend="changeValue('disp-away-score', 1)" onclick="changeValue('disp-away-score', 1)">+</button>
             </div>
             <div class="card">
                 <span class="card-label">Home:</span>
-                <input type="text" class="team-input" id="in-home" value="HOM" maxlength="6">
-                <button class="btn-sub" id="btn-home-sub">-</button>
-                <button class="btn-add" id="btn-home-add">+</button>
+                <input type="text" class="team-input" id="in-home" value="HOM" maxlength="6" oninput="document.getElementById('disp-home-name').innerText = this.value.toUpperCase()">
+                <button class="btn-sub" ontouchend="changeValue('disp-home-score', -1)" onclick="changeValue('disp-home-score', -1)">-</button>
+                <button class="btn-add" ontouchend="changeValue('disp-home-score', 1)" onclick="changeValue('disp-home-score', 1)">+</button>
             </div>
             <div class="card">
                 <span class="card-label">Inning:</span>
-                <button id="btn-inn-arrow">Top/Bot</button>
-                <button class="btn-sub" id="btn-inn-sub">-</button>
-                <button class="btn-add" id="btn-inn-add">+</button>
+                <button ontouchend="toggleArrow()" onclick="toggleArrow()">Top/Bot</button>
+                <button class="btn-sub" ontouchend="changeValue('disp-inning-num', -1, 1)" onclick="changeValue('disp-inning-num', -1, 1)">-</button>
+                <button class="btn-add" ontouchend="changeValue('disp-inning-num', 1)" onclick="changeValue('disp-inning-num', 1)">+</button>
             </div>
         </div>
 
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Count:</span>
-                <button class="btn-add" id="btn-ball-add">+ Ball</button>
-                <button class="btn-add" id="btn-strike-add">+ Strike</button>
-                <button class="btn-sub" id="btn-out-add">+ Out</button>
-                <button id="btn-count-clear">Reset Count</button>
-                <button style="background:#7f8c8d" id="btn-match-reset">Reset Match</button>
+                <button class="btn-add" ontouchend="incrementRow('dot-b', 3, 'active-dot')" onclick="incrementRow('dot-b', 3, 'active-dot')">+ Ball</button>
+                <button class="btn-add" ontouchend="incrementRow('dot-s', 2, 'active-dot')" onclick="incrementRow('dot-s', 2, 'active-dot')">+ Strike</button>
+                <button class="btn-sub" ontouchend="incrementRow('dot-o', 2, 'active-dot')" onclick="incrementRow('dot-o', 2, 'active-dot')">+ Out</button>
+                <button ontouchend="clearCount()" onclick="clearCount()">Reset Count</button>
+                <button style="background:#7f8c8d" ontouchend="location.reload()" onclick="location.reload()">Reset Match</button>
             </div>
             <div class="card">
                 <span class="card-label">Bases:</span>
-                <button id="btn-b1">1st</button>
-                <button id="btn-b2">2nd</button>
-                <button id="ctrl-b3">3rd</button>
-                <button id="btn-bases-clear">Clear</button>
+                <button id="btn-b1" ontouchend="handleBaseToggle('btn-b1', 'disp-base-1')" onclick="handleBaseToggle('btn-b1', 'disp-base-1')">1st</button>
+                <button id="btn-b2" ontouchend="handleBaseToggle('btn-b2', 'disp-base-2')" onclick="handleBaseToggle('btn-b2', 'disp-base-2')">2nd</button>
+                <button id="btn-b3" ontouchend="handleBaseToggle('btn-b3', 'disp-base-3')" onclick="handleBaseToggle('btn-b3', 'disp-base-3')">3rd</button>
+                <button ontouchend="clearBases()" onclick="clearBases()">Clear</button>
             </div>
         </div>
     </div>
@@ -162,35 +163,3 @@
                                 <div class="indicator-dot dot-b" id="b3"></div>
                             </div>
                         </div>
-                        <div class="matrix-row">
-                            <span class="row-header">S</span>
-                            <div class="dot-grid">
-                                <div class="indicator-dot dot-s" id="s1"></div>
-                                <div class="indicator-dot dot-s" id="s2"></div>
-                            </div>
-                        </div>
-                        <div class="matrix-row">
-                            <span class="row-header">O</span>
-                            <div class="dot-grid">
-                                <div class="indicator-dot dot-o" id="o1"></div>
-                                <div class="indicator-dot dot-o" id="o2"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CLEAN NATIVE BROADCAST ACTIONS RUNTIME -->
-    <script>
-        // Simple numeric readout modifiers
-        function changeValue(id, amount, minLimit = 0) {
-            let el = document.getElementById(id);
-            if (!el) return;
-            let current = parseInt(el.innerText) || 0;
-            el.innerText = Math.max(minLimit, current + amount);
-        }
-
-        // Clean dot/base color removal helper
-        function clearClass(className, activeClass) {

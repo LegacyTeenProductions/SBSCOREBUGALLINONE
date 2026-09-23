@@ -14,7 +14,7 @@
         }
 
         body {
-            background-color: #1a1a1a; /* Dark background for standalone viewing */
+            background-color: #1a1a1a; 
             padding: 20px;
             color: #fff;
         }
@@ -58,8 +58,8 @@
             text-transform: uppercase;
         }
 
-        .away-team { background-color: #b30000; } /* Red Away Team */
-        .home-team { background-color: #004488; } /* Blue Home Team */
+        .away-team { background-color: #b30000; } 
+        .home-team { background-color: #004488; } 
 
         .team-name {
             flex-grow: 1;
@@ -138,7 +138,7 @@
         }
 
         .out-dot.active {
-            background-color: #ff3333; /* Red dot for active out */
+            background-color: #ff3333; 
             box-shadow: 0 0 8px #ff3333;
         }
 
@@ -183,7 +183,7 @@
         }
 
         .base.active {
-            background-color: #ffcc00; /* Yellow for occupied bases */
+            background-color: #ffcc00; 
             box-shadow: 0 0 6px #ffcc00;
         }
 
@@ -198,7 +198,7 @@
             border: 1px solid #333;
             border-radius: 8px;
             padding: 20px;
-            max-width: 900px;
+            max-width: 950px;
         }
 
         .control-panel h2 {
@@ -222,7 +222,7 @@
             padding: 12px;
             border-radius: 6px;
             flex: 1;
-            min-width: 250px;
+            min-width: 280px;
         }
 
         .ctrl-group h3 {
@@ -349,3 +349,9 @@
         <div class="team-settings">
             <input type="text" id="inputAway" value="AWAY" oninput="updateNames()" placeholder="Away Team">
             <input type="text" id="inputHome" value="HOME" oninput="updateNames()" placeholder="Home Team">
+        </div>
+
+        <!-- Upper Control Row -->
+        <div class="ctrl-row">
+            <!-- Away Panel -->
+            <div class="ctrl-group">

@@ -153,26 +153,21 @@
     <div id="operator-deck">
         <h2>Softball Live Overlay Workspace</h2>
         <div class="control-row">
-            <div class="card">
-                <span class="card-label">Away Name:</span>
-                <input type="text" class="team-input" id="input-away-name" value="AWY" maxlength="6">
-                <button class="btn-sub" id="btn-away-minus">-</button>
-                <button class="btn-add" id="btn-away-plus">+</button>
-            </div>
-            <div class="card">
-                <span class="card-label">Home Name:</span>
-                <input type="text" class="team-input" id="input-home-name" value="HOM" maxlength="6">
-                <button class="btn-sub" id="btn-home-minus">-</button>
-                <button class="btn-add" id="btn-home-plus">+</button>
-            </div>
-            <div class="card">
-                <span class="card-label">Inning</span>
-                <button id="btn-toggle-inning">Top/Bot</button>
-                <button class="btn-sub" id="btn-inn-minus">-</button>
-                <button class="btn-add" id="btn-inn-plus">+</button>
-            </div>
-        </div>
-
+            <!-- REPLACE THE TEAM CARDS WITH THIS EXACT BLOCK -->
+    <div class="card">
+        <span class="card-label">Away Name:</span>
+        <!-- Added id="input-away-name" -->
+        <input type="text" class="team-input" id="input-away-name" value="AWY" maxlength="6">
+        <button class="btn-sub" id="btn-away-minus">-</button>
+        <button class="btn-add" id="btn-away-plus">+</button>
+    </div>
+    <div class="card">
+        <span class="card-label">Home Name:</span>
+        <!-- Added id="input-home-name" -->
+        <input type="text" class="team-input" id="input-home-name" value="HOM" maxlength="6">
+        <button class="btn-sub" id="btn-home-minus">-</button>
+        <button class="btn-add" id="btn-home-plus">+</button>
+</div>  
         <div class="control-row">
             <div class="card">
                 <span class="card-label">Plate Count</span>

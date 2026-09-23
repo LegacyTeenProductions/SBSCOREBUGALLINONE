@@ -12,7 +12,6 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             font-weight: 800; color: #ffffff;
             user-select: none; width: 100vw; height: 100vh; overflow: hidden;
-            -webkit-touch-callout: none; -webkit-user-select: none;
         }
 
         /* 1. OPERATOR DECK (Top 50%) */
@@ -36,13 +35,10 @@
         button {
             background-color: #343a40; color: #ffffff; border: 1px solid #495057;
             padding: 14px 22px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold;
-            touch-action: manipulation;
         }
         button:active { background-color: #495057; }
         .btn-add { background-color: #2b9348; border-color: #2b9348; }
-        .btn-add:active { background-color: #1b6329; }
         .btn-sub { background-color: #e63946; border-color: #e63946; }
-        .btn-sub:active { background-color: #b81d24; }
 
         /* 2. OVERLAY GRAPHIC (Bottom 50% - Scaled to 2/3 size) */
         #broadcast-canvas {
@@ -127,7 +123,7 @@
                 <span class="card-label">Bases:</span>
                 <button id="btn-b1">1st</button>
                 <button id="btn-b2">2nd</button>
-                <button id="btn-b3">3rd</button>
+                <button id="ctrl-b3">3rd</button>
                 <button id="btn-bases-clear">Clear</button>
             </div>
         </div>
@@ -186,9 +182,15 @@
         </div>
     </div>
 
-    <!-- NATIVE BROADCAST HARDWARE SCRIPT INTERCEPTOR -->
+    <!-- CLEAN NATIVE BROADCAST ACTIONS RUNTIME -->
     <script>
-        // 1. Core Simple Numeric Modifiers
+        // Simple numeric readout modifiers
         function changeValue(id, amount, minLimit = 0) {
             let el = document.getElementById(id);
+            if (!el) return;
             let current = parseInt(el.innerText) || 0;
+            el.innerText = Math.max(minLimit, current + amount);
+        }
+
+        // Clean dot/base color removal helper
+        function clearClass(className, activeClass) {

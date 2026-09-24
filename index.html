@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Team & Count Tracker</title>
+    <title>Team, Count, Inning & Run Tracker</title>
     <style>
         /* --- CORE STANDALONE IPAD OPTIMIZATIONS --- */
         * {
@@ -34,6 +34,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
+        /* Your exact working team lines style */
         .team-line {
             font-size: 24px;
             font-weight: bold;
@@ -138,6 +139,7 @@
             box-shadow: 0 2px 0 #1a1a1a;
         }
 
+        button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
         button.plus-ball { background: #5e35b1; box-shadow: 0 4px 0 #4527a0; }
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
@@ -150,8 +152,12 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
+        <!-- Safely appending plain text placeholders for Runs right into your un-nested text lines -->
+        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span> — RUNS: <span id="dispAwayRuns" style="color: #ffcc00;">0</span></div>
+        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns" style="color: #ffcc00;">0</span></div>
+        <div class="team-line" style="font-size: 20px; color: #aaa; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
+            INNING: <span id="dispInning" style="color: #ffcc00;">▲ 1</span>
+        </div>
         
         <div class="data-row">
             <div class="data-box">
@@ -159,9 +165,8 @@
                 <div class="data-value" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
-                <!-- Kept your original box, just showing Inning on the left and Outs on the right -->
-                <div class="data-label">Inning / Outs</div>
-                <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
+                <div class="data-label">Outs</div>
+                <div class="data-value" id="dispOuts">0</div>
             </div>
         </div>
     </div>
@@ -174,6 +179,24 @@
             <h3>Team Names</h3>
             <input type="text" id="inputAway" value="TEAM A" oninput="updateNames()" placeholder="Away Name...">
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
+        </div>
+
+        <!-- Section: Away Runs -->
+        <div class="panel-section">
+            <h3 style="color: #ff4d4d;">Away Team Runs</h3>
+            <div class="btn-row">
+                <button class="plus-run" onclick="adjustCount('awayRuns', 1)">+1 Run</button>
+                <button class="sub-btn" onclick="adjustCount('awayRuns', -1)">-1 Run</button>
+            </div>
+        </div>
+
+        <!-- Section: Home Runs -->
+        <div class="panel-section">
+            <h3 style="color: #3399ff;">Home Team Runs</h3>
+            <div class="btn-row">
+                <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
+                <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
+            </div>
         </div>
 
         <!-- Section: Innings -->
@@ -213,13 +236,15 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object safely extended with inning markers
+        // Data State Object extended cleanly with run trackers
         let game = {
             balls: 0,
             strikes: 0,
             outs: 0,
             inning: 1,
-            isInningTop: true
+            isInningTop: true,
+            awayRuns: 0,
+            homeRuns: 0
         };
 
         // Your exact working team name entry code
@@ -230,9 +255,8 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions for Balls, Strikes, and Outs safely
+        // Handles additions and subtractions across variables safely with no typos
         function adjustCount(field, value) {
-            // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);
 
             // Softball Rule Automations:
@@ -257,23 +281,3 @@
             renderDisplay();
         }
 
-        // Manual Clear Count button helper
-        function clearCount() {
-            game.balls = 0;
-            game.strikes = 0;
-            renderDisplay();
-        }
-
-        // Pushes state variables into the visible HTML layout elements safely
-        function renderDisplay() {
-            document.getElementById('dispInning').innerHTML = (game.isInningTop ? '▲' : '▼') + ' ' + game.inning;
-            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
-            document.getElementById('dispOuts').innerText = game.outs;
-        }
-
-        // Run an initial render on page load so numbers aren't blank
-        renderDisplay();
-    </script>
-
-</body>
-</html>

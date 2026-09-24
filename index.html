@@ -142,7 +142,6 @@
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
         button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
-        button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
         button.sub-btn { background: #c62828; box-shadow: 0 4px 0 #8e1c1c; padding: 12px 10px; font-size: 14px;}
         button.clear-btn { background: #4f5b66; box-shadow: 0 4px 0 #343d46; padding: 12px 10px; font-size: 14px;}
     </style>
@@ -151,7 +150,6 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Kept 100% exactly as your working file, no extra tags added -->
         <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
         <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
         
@@ -161,6 +159,7 @@
                 <div class="data-value" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
+                <!-- Kept your original box, just showing Inning on the left and Outs on the right -->
                 <div class="data-label">Inning / Outs</div>
                 <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
             </div>
@@ -175,24 +174,6 @@
             <h3>Team Names</h3>
             <input type="text" id="inputAway" value="TEAM A" oninput="updateNames()" placeholder="Away Name...">
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
-        </div>
-
-        <!-- Section: Away Runs -->
-        <div class="panel-section">
-            <h3 style="color: #ff4d4d;">Away Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('awayRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('awayRuns', -1)">-1 Run</button>
-            </div>
-        </div>
-
-        <!-- Section: Home Runs -->
-        <div class="panel-section">
-            <h3>Home Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
-            </div>
         </div>
 
         <!-- Section: Innings -->
@@ -232,28 +213,26 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object
+        // Data State Object safely extended with inning markers
         let game = {
             balls: 0,
             strikes: 0,
             outs: 0,
             inning: 1,
-            isInningTop: true,
-            awayRuns: 0,
-            homeRuns: 0
+            isInningTop: true
         };
 
-        // Syncs the typing text inputs and appends the score dynamically inside the string safely
+        // Your exact working team name entry code
         function updateNames() {
-            const awayVal = document.getElementById('inputAway').value || 'AWAY';
-            const homeVal = document.getElementById('inputHome').value || 'HOME';
-            
-            document.getElementById('bugAway').innerText = awayVal + " (" + game.awayRuns + ")";
-            document.getElementById('bugHome').innerText = homeVal + " (" + game.homeRuns + ")";
+            const awayVal = document.getElementById('inputAway').value;
+            const homeVal = document.getElementById('inputHome').value;
+            document.getElementById('bugAway').innerText = awayVal || 'AWAY';
+            document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions for all parameters safely
+        // Handles additions and subtractions for Balls, Strikes, and Outs safely
         function adjustCount(field, value) {
+            // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);
 
             // Softball Rule Automations:
@@ -285,7 +264,16 @@
             renderDisplay();
         }
 
-        // Pushes state variables safely
+        // Pushes state variables into the visible HTML layout elements safely
         function renderDisplay() {
-            // Update names to push run changes into the name strings smoothly
-            updateNames();
+            document.getElementById('dispInning').innerHTML = (game.isInningTop ? '▲' : '▼') + ' ' + game.inning;
+            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
+            document.getElementById('dispOuts').innerText = game.outs;
+        }
+
+        // Run an initial render on page load so numbers aren't blank
+        renderDisplay();
+    </script>
+
+</body>
+</html>

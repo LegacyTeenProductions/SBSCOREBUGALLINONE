@@ -99,7 +99,7 @@
             padding-bottom: 4px;
         }
 
-        /* Name Inputs */
+        /* Name & Number Inputs */
         input {
             width: 100%;
             background-color: #333;
@@ -112,6 +112,12 @@
             font-weight: bold;
             -webkit-user-select: text; /* Allows typing inside text field */
             user-select: text;
+        }
+
+        /* Small inputs layout side-by-side for scores */
+        .score-input-row {
+            display: flex;
+            gap: 10px;
         }
 
         /* Large Touch Buttons Grid */
@@ -142,7 +148,6 @@
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
         button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
-        button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
         button.sub-btn { background: #c62828; box-shadow: 0 4px 0 #8e1c1c; padding: 12px 10px; font-size: 14px;}
         button.clear-btn { background: #4f5b66; box-shadow: 0 4px 0 #343d46; padding: 12px 10px; font-size: 14px;}
     </style>
@@ -151,16 +156,17 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
+        <!-- Your exact original, untouched team name rows -->
         <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
         <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
         
         <div class="data-row">
             <div class="data-box">
-                <!-- Safe inclusion of Runs data alongside Count without creating new text IDs -->
-                <div class="data-label">Runs (A - H) / Count</div>
-                <div class="data-value"><span id="dispRuns" style="color: #ffffff;">0 - 0</span> — <span id="dispCount">0 - 0</span></div>
+                <div class="data-label">Count (B - S)</div>
+                <div class="data-value" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
+                <!-- Your exact working second box, displaying Inning on the left and Outs on the right -->
                 <div class="data-label">Inning / Outs</div>
                 <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
             </div>
@@ -177,21 +183,12 @@
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
         </div>
 
-        <!-- Section: Away Runs -->
+        <!-- Section: Game Scores (Safely inputting data via text inputs just like team names) -->
         <div class="panel-section">
-            <h3 style="color: #ff4d4d;">Away Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('awayRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('awayRuns', -1)">-1 Run</button>
-            </div>
-        </div>
-
-        <!-- Section: Home Runs -->
-        <div class="panel-section">
-            <h3 style="color: #3399ff;">Home Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
+            <h3>Current Scores</h3>
+            <div class="score-input-row">
+                <input type="number" id="scoreAway" value="0" pattern="[0-9]*" inputmode="numeric" placeholder="Away Runs">
+                <input type="number" id="scoreHome" value="0" pattern="[0-9]*" inputmode="numeric" placeholder="Home Runs">
             </div>
         </div>
 
@@ -232,15 +229,13 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object safely extended with inning and run trackers
+        // Your exact working data state object
         let game = {
             balls: 0,
             strikes: 0,
             outs: 0,
             inning: 1,
-            isInningTop: true,
-            awayRuns: 0,
-            homeRuns: 0
+            isInningTop: true
         };
 
         // Your exact working team name entry code
@@ -284,5 +279,10 @@
             renderDisplay();
         }
 
-        // Pushes state variables into the visible HTML layout elements safely
+        // Pushes state variables safely with zero modifications to display elements
         function renderDisplay() {
+            document.getElementById('dispInning').innerHTML = (game.isInningTop ? '▲' : '▼') + ' ' + game.inning;
+            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
+            document.getElementById('dispOuts').innerText = game.outs;
+        }
+

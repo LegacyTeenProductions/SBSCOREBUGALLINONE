@@ -138,7 +138,6 @@
             box-shadow: 0 2px 0 #1a1a1a;
         }
 
-        button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
         button.plus-ball { background: #5e35b1; box-shadow: 0 4px 0 #4527a0; }
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
@@ -151,9 +150,8 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Your exact original team lines, safely adding flat runs markers -->
-        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span> — RUNS: <span id="dispAwayRuns" style="color: #ffcc00;">0</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns">0</span></div>
+        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
+        <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
         
         <div class="data-row">
             <div class="data-box">
@@ -161,7 +159,7 @@
                 <div class="data-value" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
-                <!-- Your exact working second box, displaying Inning on the left and Outs on the right -->
+                <!-- Kept your original box, just showing Inning on the left and Outs on the right -->
                 <div class="data-label">Inning / Outs</div>
                 <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
             </div>
@@ -176,24 +174,6 @@
             <h3>Team Names</h3>
             <input type="text" id="inputAway" value="TEAM A" oninput="updateNames()" placeholder="Away Name...">
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
-        </div>
-
-        <!-- Section: Away Runs -->
-        <div class="panel-section">
-            <h3 style="color: #ff4d4d;">Away Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('awayRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('awayRuns', -1)">-1 Run</button>
-            </div>
-        </div>
-
-        <!-- Section: Home Runs -->
-        <div class="panel-section">
-            <h3 style="color: #3399ff;">Home Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
-            </div>
         </div>
 
         <!-- Section: Innings -->
@@ -233,15 +213,13 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object safely extended with inning and run trackers
+        // Data State Object safely extended with inning markers
         let game = {
             balls: 0,
             strikes: 0,
             outs: 0,
             inning: 1,
-            isInningTop: true,
-            awayRuns: 0,
-            homeRuns: 0
+            isInningTop: true
         };
 
         // Your exact working team name entry code
@@ -252,8 +230,9 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions safely with no typos
+        // Handles additions and subtractions for Balls, Strikes, and Outs safely
         function adjustCount(field, value) {
+            // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);
 
             // Softball Rule Automations:
@@ -285,3 +264,16 @@
             renderDisplay();
         }
 
+        // Pushes state variables into the visible HTML layout elements safely
+        function renderDisplay() {
+            document.getElementById('dispInning').innerHTML = (game.isInningTop ? '▲' : '▼') + ' ' + game.inning;
+            document.getElementById('dispCount').innerText = game.balls + ' - ' + game.strikes;
+            document.getElementById('dispOuts').innerText = game.outs;
+        }
+
+        // Run an initial render on page load so numbers aren't blank
+        renderDisplay();
+    </script>
+
+</body>
+</html>

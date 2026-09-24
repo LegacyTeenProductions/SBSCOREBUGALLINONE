@@ -11,9 +11,9 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-user-select: none; /* Disables selection overlays on fast touch */
+            -webkit-user-select: none; 
             user-select: none;
-            touch-action: manipulation; /* Removes 300ms double-tap zoom delay */
+            touch-action: manipulation; 
         }
 
         body {
@@ -158,7 +158,6 @@
             box-shadow: 0 0 12px #ffcc00;
         }
 
-        /* Position anchors rotated to match standard fields */
         .pad-base.first  { top: 0; right: 0; transform: rotate(-45deg); }
         .pad-base.second { top: 0; left: 0;  transform: rotate(-45deg); }
         .pad-base.third  { bottom: 0; left: 0; transform: rotate(-45deg); }
@@ -205,7 +204,6 @@
             margin-bottom: 0;
         }
 
-        /* Fat high-tactile dugout buttons built for immediate taps */
         button {
             background: #3e3e3e;
             color: white;
@@ -245,29 +243,25 @@
 </head>
 <body>
 
-    <!-- 1. UPPER DISPLAY CONSOLE -->
+    <!-- 1. DISPLAY BOARD -->
     <div class="scoreboard-view">
         <div class="board-grid">
-            <!-- Table Headers -->
             <div class="header-cell" style="text-align: left;">Teams</div>
             <div class="header-cell">Runs</div>
             <div class="header-cell">Hits</div>
             <div class="header-cell">Errors</div>
 
-            <!-- Away Row Values -->
             <div class="team-title away-color">AWAY</div>
             <div class="digit" id="dispAwayScore">0</div>
             <div class="digit" id="dispAwayHits">0</div>
             <div class="digit" id="dispAwayErrors">0</div>
 
-            <!-- Home Row Values -->
             <div class="team-title home-color">HOME</div>
             <div class="digit" id="dispHomeScore">0</div>
             <div class="digit" id="dispHomeHits">0</div>
             <div class="digit" id="dispHomeErrors">0</div>
         </div>
 
-        <!-- Metric Boxes Grid -->
         <div class="infobar-row">
             <div class="status-box">
                 <span class="status-label">Inning</span>
@@ -299,9 +293,8 @@
     <!-- 3. INTERACTIVE CONTROL ENGINE DECK -->
     <div class="deck-grid">
         
-        <!-- COLUMN 1: TEAMS MATCH PRODUCTION -->
+        <!-- COLUMN 1: TEAM ADJUSTMENTS -->
         <div class="deck-column">
-            <!-- Away Panel Controls -->
             <div class="control-block">
                 <h3 class="away-color">Away Team Tracking</h3>
                 <div class="btn-row">
@@ -316,5 +309,11 @@
                 </div>
             </div>
 
-            <!-- Home Panel Controls -->
             <div class="control-block">
+                <h3 class="home-color">Home Team Tracking</h3>
+                <div class="btn-row">
+                    <button class="add-btn" onclick="modify('homeScore', 1)">+1 Run</button>
+                    <button class="add-btn" onclick="modify('homeHits', 1)">+1 Hit</button>
+                    <button class="add-btn" onclick="modify('homeErrors', 1)">+1 Err</button>
+                </div>
+                <div class="btn-row">

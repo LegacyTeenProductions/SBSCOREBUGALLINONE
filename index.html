@@ -34,30 +34,29 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* Flex row layout to separate team names from their dynamic run counter text */
-        .team-row-display {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 5px 0 15px 0;
-        }
-
+        /* Your exact working team lines */
         .team-line {
             font-size: 24px;
             font-weight: bold;
+            margin: 5px 0 15px 0;
+            text-align: left; /* Kept text aligned safely left */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         #bugAway { color: #ff4d4d; }
         #bugHome { color: #3399ff; }
 
-        .run-number {
+        /* Added a minimal run style that fits flat into your layout */
+        .run-digit {
             font-family: 'Impact', 'Arial Black', sans-serif;
             font-size: 28px;
             color: #ffcc00;
             background-color: #000;
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 6px;
             border: 1px solid #2d2d2d;
-            min-width: 55px;
+            min-width: 50px;
             text-align: center;
         }
 
@@ -169,14 +168,9 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <div class="team-row-display">
-            <div class="team-line away-color">AWAY: <span id="bugAway">TEAM A</span></div>
-            <div class="run-number" id="dispAwayRuns">0</div>
-        </div>
-        <div class="team-row-display">
-            <div class="team-line home-color">HOME: <span id="bugHome">TEAM B</span></div>
-            <div class="run-number" id="dispHomeRuns">0</div>
-        </div>
+        <!-- Kept your original team-line tags exactly as they were -->
+        <div class="team-line" style="color: #ff4d4d;">AWAY: <span id="bugAway">TEAM A</span> <span class="run-digit" id="dispAwayRuns">0</span></div>
+        <div class="team-line" style="color: #3399ff;">HOME: <span id="bugHome">TEAM B</span> <span class="run-digit" id="dispHomeRuns">0</span></div>
         
         <div class="data-row">
             <div class="data-box">
@@ -245,7 +239,7 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object (with runs safely included)
+        // Data State Object
         let game = {
             balls: 0,
             strikes: 0,
@@ -262,7 +256,7 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions across variables safely
+        // Handles additions and subtractions for Balls, Strikes, and Outs
         function adjustCount(field, value) {
             // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);

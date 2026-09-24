@@ -43,11 +43,11 @@
         #bugAway { color: #ff4d4d; }
         #bugHome { color: #3399ff; }
 
-        /* The Data Display Row (Count & Outs) */
+        /* The Data Display Row (Inning, Count & Outs) */
         .data-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 10px;
             border-top: 1px solid #333;
             padding-top: 15px;
         }
@@ -56,11 +56,11 @@
             background-color: #181818;
             border: 1px solid #2d2d2d;
             border-radius: 8px;
-            padding: 10px;
+            padding: 10px 4px;
         }
 
         .data-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #aaa;
             text-transform: uppercase;
             font-weight: bold;
@@ -68,11 +68,12 @@
         }
 
         .data-value {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: bold;
-            color: #ffcc00;
+            color: #ffffff;
             font-family: 'Impact', 'Arial Black', sans-serif;
         }
+        .yellow-text { color: #ffcc00; }
 
 
         /* --- 2. THE CONTROL PANEL CONTAINER --- */
@@ -140,6 +141,7 @@
         }
 
         button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
+        button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
         button.plus-ball { background: #5e35b1; box-shadow: 0 4px 0 #4527a0; }
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
@@ -151,18 +153,21 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Your original team lines, keeping names completely un-nested -->
         <div class="team-line">AWAY: <span id="bugAway">TEAM A</span> — RUNS: <span id="dispAwayRuns" style="color: #ffcc00;">0</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns" style="color: #ffcc00;">0</span></div>
+        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns">0</span></div>
         
         <div class="data-row">
             <div class="data-box">
+                <div class="data-label">Inning</div>
+                <div class="data-value" id="dispInning">▲ 1</div>
+            </div>
+            <div class="data-box">
                 <div class="data-label">Count (B - S)</div>
-                <div class="data-value" id="dispCount">0 - 0</div>
+                <div class="data-value yellow-text" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
                 <div class="data-label">Outs</div>
-                <div class="data-value" id="dispOuts">0</div>
+                <div class="data-value yellow-text" id="dispOuts">0</div>
             </div>
         </div>
     </div>
@@ -192,6 +197,16 @@
             <div class="btn-row">
                 <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
                 <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
+            </div>
+        </div>
+
+        <!-- Section: Innings -->
+        <div class="panel-section">
+            <h3>Innings</h3>
+            <div class="btn-row">
+                <button class="plus-inning" onclick="adjustCount('inning', 1)">+1 Inning</button>
+                <button class="sub-btn" onclick="adjustCount('inning', -1)">-1 Inning</button>
+                <button class="clear-btn" onclick="toggleInningHalf()">Top / Bot</button>
             </div>
         </div>
 
@@ -228,7 +243,9 @@
             strikes: 0,
             outs: 0,
             awayRuns: 0,
-            homeRuns: 0
+            homeRuns: 0,
+            inning: 1,
+            isInningTop: true
         };
 
         // Your exact working team name function
@@ -259,6 +276,12 @@
             renderDisplay();
         }
 
+        // Toggles between Top (▲) and Bottom (▼) half-innings
+        function toggleInningHalf() {
+            game.isInningTop = !game.isInningTop;
+            renderDisplay();
+        }
+
         // Manual Clear Count button helper
         function clearCount() {
             game.balls = 0;
@@ -267,16 +290,3 @@
         }
 
         // Pushes state variables into the visible HTML layout elements
-        function renderDisplay() {
-            document.getElementById('dispAwayRuns').innerText = game.awayRuns;
-            document.getElementById('dispHomeRuns').innerText = game.homeRuns;
-            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
-            document.getElementById('dispOuts').innerText = game.outs;
-        }
-
-        // Run an initial render on page load so numbers aren't blank
-        renderDisplay();
-    </script>
-
-</body>
-</html>

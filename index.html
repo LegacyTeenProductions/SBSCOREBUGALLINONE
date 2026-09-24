@@ -151,17 +151,16 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Safely appended the plain text run spans right inside your un-nested text lines -->
-        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span> — RUNS: <span id="dispAwayRuns" style="color: #ffcc00;">0</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns" style="color: #ffcc00;">0</span></div>
+        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
+        <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
         
         <div class="data-row">
             <div class="data-box">
-                <div class="data-label">Count (B - S)</div>
-                <div class="data-value" id="dispCount">0 - 0</div>
+                <!-- Safe inclusion of Runs data alongside Count without creating new text IDs -->
+                <div class="data-label">Runs (A - H) / Count</div>
+                <div class="data-value"><span id="dispRuns" style="color: #ffffff;">0 - 0</span> — <span id="dispCount">0 - 0</span></div>
             </div>
             <div class="data-box">
-                <!-- Your exact working second box, displaying Inning on the left and Outs on the right -->
                 <div class="data-label">Inning / Outs</div>
                 <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
             </div>
@@ -233,7 +232,7 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object safely extended with inning and run markers
+        // Data State Object safely extended with inning and run trackers
         let game = {
             balls: 0,
             strikes: 0,
@@ -252,9 +251,8 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions for all parameters safely
+        // Handles additions and subtractions safely with no typos
         function adjustCount(field, value) {
-            // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);
 
             // Softball Rule Automations:
@@ -281,3 +279,10 @@
 
         // Manual Clear Count button helper
         function clearCount() {
+            game.balls = 0;
+            game.strikes = 0;
+            renderDisplay();
+        }
+
+        // Pushes state variables into the visible HTML layout elements safely
+        function renderDisplay() {

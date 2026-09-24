@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Standalone Softball Scorekeeper</title>
+    <title>Complete Softball Scorekeeper</title>
     <style>
         /* --- CORE STANDALONE IPAD OPTIMIZATIONS --- */
         * {
@@ -34,6 +34,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
+        /* Teams Layout Grid with Run Box Columns */
         .team-grid {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -62,6 +63,7 @@
             text-align: center;
         }
 
+        /* The Data Display Row (Count, Outs, Inning) */
         .data-row {
             display: grid;
             grid-template-columns: 1.2fr 1fr 1fr;
@@ -120,6 +122,7 @@
             padding-bottom: 4px;
         }
 
+        /* Name Inputs */
         input {
             width: 100%;
             background-color: #333;
@@ -134,6 +137,7 @@
             user-select: text;
         }
 
+        /* Large Touch Buttons Grid */
         .btn-row {
             display: flex;
             gap: 10px;
@@ -173,15 +177,18 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
+        <!-- Away Row -->
         <div class="team-grid">
             <div class="team-label-text away-color" id="bugAway">TEAM A</div>
             <div class="run-digit" id="dispAwayRuns">0</div>
         </div>
+        <!-- Home Row -->
         <div class="team-grid">
             <div class="team-label-text home-color" id="bugHome">TEAM B</div>
             <div class="run-digit" id="dispHomeRuns">0</div>
         </div>
         
+        <!-- Status Matrix Row -->
         <div class="data-row">
             <div class="data-box">
                 <div class="data-label">Inning</div>
@@ -201,12 +208,14 @@
     <!-- 2. THE CONTROL PANEL -->
     <div class="control-panel">
         
+        <!-- Section: Team Names -->
         <div class="panel-section">
             <h3>Team Names</h3>
             <input type="text" id="inputAway" value="TEAM A" oninput="updateNames()" placeholder="Away Name...">
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
         </div>
 
+        <!-- Section: Away Scoring -->
         <div class="panel-section">
             <h3 class="away-color">Away Team Runs</h3>
             <div class="btn-row">
@@ -215,6 +224,7 @@
             </div>
         </div>
 
+        <!-- Section: Home Scoring -->
         <div class="panel-section">
             <h3 class="home-color">Home Team Runs</h3>
             <div class="btn-row">
@@ -223,6 +233,7 @@
             </div>
         </div>
 
+        <!-- Section: Inning Controls -->
         <div class="panel-section">
             <h3>Inning Status</h3>
             <div class="btn-row">
@@ -232,6 +243,7 @@
             </div>
         </div>
 
+        <!-- Section: At Bat Trackers -->
         <div class="panel-section">
             <h3>At Bat Trackers</h3>
             <div class="btn-row">
@@ -245,6 +257,7 @@
             </div>
         </div>
 
+        <!-- Section: Inning Outs -->
         <div class="panel-section">
             <h3>Inning Outs</h3>
             <div class="btn-row">
@@ -261,6 +274,7 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
+        // Central State Memory Core
         let game = {
             awayRuns: 0,
             homeRuns: 0,
@@ -271,6 +285,7 @@
             outs: 0
         };
 
+        // Syncs typed letters in real-time
         function updateNames() {
             const awayVal = document.getElementById('inputAway').value;
             const homeVal = document.getElementById('inputHome').value;
@@ -278,23 +293,3 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        function adjustGame(field, value) {
-            game[field] = Math.max(0, game[field] + value);
-
-            if (field === 'outs' && game.outs >= 3) {
-                game.outs = 0;
-                game.balls = 0;
-                game.strikes = 0;
-            }
-            if (field === 'balls' && game.balls >= 4) game.balls = 0;
-            if (field === 'strikes' && game.strikes >= 3) game.strikes = 0;
-
-            renderDisplay();
-        }
-
-        function toggleInningHalf() {
-            game.isInningTop = !game.isInningTop;
-            renderDisplay();
-        }
-
-        function clearCount() {

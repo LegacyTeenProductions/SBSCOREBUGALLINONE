@@ -34,7 +34,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* Your exact working team lines style */
         .team-line {
             font-size: 24px;
             font-weight: bold;
@@ -139,8 +138,6 @@
             box-shadow: 0 2px 0 #1a1a1a;
         }
 
-        button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
-        button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
         button.plus-ball { background: #5e35b1; box-shadow: 0 4px 0 #4527a0; }
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
@@ -152,12 +149,8 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Kept your original structure, safely adding plain text placeholders for Runs and Inning -->
-        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span> — RUNS: <span id="dispAwayRuns" style="color: #ffcc00;">0</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns">0</span></div>
-        <div class="team-line" style="font-size: 20px; color: #aaa; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
-            INNING: <span id="dispInning" style="color: #ffcc00;">▲ 1</span>
-        </div>
+        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
+        <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
         
         <div class="data-row">
             <div class="data-box">
@@ -179,34 +172,6 @@
             <h3>Team Names</h3>
             <input type="text" id="inputAway" value="TEAM A" oninput="updateNames()" placeholder="Away Name...">
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
-        </div>
-
-        <!-- Section: Away Runs -->
-        <div class="panel-section">
-            <h3>Away Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('awayRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('awayRuns', -1)">-1 Run</button>
-            </div>
-        </div>
-
-        <!-- Section: Home Runs -->
-        <div class="panel-section">
-            <h3>Home Team Runs</h3>
-            <div class="btn-row">
-                <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
-                <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
-            </div>
-        </div>
-
-        <!-- Section: Innings -->
-        <div class="panel-section">
-            <h3>Innings</h3>
-            <div class="btn-row">
-                <button class="plus-inning" onclick="adjustCount('inning', 1)">+1 Inning</button>
-                <button class="sub-btn" onclick="adjustCount('inning', -1)">-1 Inning</button>
-                <button class="clear-btn" onclick="toggleInningHalf()">Top / Bot</button>
-            </div>
         </div>
 
         <!-- Section: At Bat Trackers -->
@@ -240,14 +205,10 @@
         let game = {
             balls: 0,
             strikes: 0,
-            outs: 0,
-            awayRuns: 0,
-            homeRuns: 0,
-            inning: 1,
-            isInningTop: true
+            outs: 0
         };
 
-        // Your exact working team name function
+        // Syncs the typing text inputs to the scoreboard labels
         function updateNames() {
             const awayVal = document.getElementById('inputAway').value;
             const homeVal = document.getElementById('inputHome').value;
@@ -255,29 +216,27 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions safely with no typos
+        // Handles additions and subtractions for Balls, Strikes, and Outs
         function adjustCount(field, value) {
+            // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);
 
             // Softball Rule Automations:
+            // 1. If Outs reach 3, reset outs to 0 and wipe the ball/strike count
             if (field === 'outs' && game.outs >= 3) {
                 game.outs = 0;
                 game.balls = 0;
                 game.strikes = 0;
             }
+            // 2. If Balls reach 4, roll back to 0 (Walk)
             if (field === 'balls' && game.balls >= 4) {
                 game.balls = 0;
             }
+            // 3. If Strikes reach 3, roll back to 0 (Strikeout)
             if (field === 'strikes' && game.strikes >= 3) {
                 game.strikes = 0;
             }
 
-            renderDisplay();
-        }
-
-        // Toggles between Top (▲) and Bottom (▼) half-innings
-        function toggleInningHalf() {
-            game.isInningTop = !game.isInningTop;
             renderDisplay();
         }
 
@@ -288,3 +247,15 @@
             renderDisplay();
         }
 
+        // Pushes state variables into the visible HTML layout elements
+        function renderDisplay() {
+            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
+            document.getElementById('dispOuts').innerText = game.outs;
+        }
+
+        // Run an initial render on page load so numbers aren't blank
+        renderDisplay();
+    </script>
+
+</body>
+</html>

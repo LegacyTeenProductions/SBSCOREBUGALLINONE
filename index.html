@@ -3,39 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Softball Dugout Scorekeeper</title>
+    <title>iPad Standalone Softball Scorekeeper</title>
     <style>
-        /* --- GLOBAL RESETS & TABLET ZOOM prevention --- */
+        /* --- CORE STANDALONE IPAD OPTIMIZATIONS --- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-user-select: none; /* Prevents text highlights when fast-tapping */
+            -webkit-user-select: none; /* Disables selection overlays on fast touch */
             user-select: none;
+            touch-action: manipulation; /* Removes 300ms double-tap zoom delay */
         }
 
         body {
             background-color: #121212; 
-            padding: 15px;
+            padding: 20px;
             color: #fff;
             overflow-x: hidden;
         }
 
-        /* --- LARGE UPPER DIGITAL BOARD --- */
+        /* --- UPPER DISPLAY SCOREBOARD --- */
         .scoreboard-view {
             background: #1e1e1e;
             border: 2px solid #333;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 14px;
+            padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
         }
 
         .board-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 2.5fr 1fr 1fr 1fr;
+            gap: 12px;
             text-align: center;
             align-items: center;
         }
@@ -46,13 +47,13 @@
             color: #888;
             padding-bottom: 5px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .team-title {
             text-align: left;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            font-size: 24px;
+            font-weight: 900;
         }
 
         .away-color { color: #ff4d4d; }
@@ -60,213 +61,220 @@
 
         .digit {
             font-family: 'Impact', 'Arial Black', sans-serif;
-            font-size: 38px;
+            font-size: 42px;
             background: #000;
-            border-radius: 6px;
-            padding: 4px 0;
+            border-radius: 8px;
+            padding: 6px 0;
             color: #ffcc00;
-            border: 1px solid #222;
+            border: 1px solid #2d2d2d;
+            min-width: 60px;
         }
 
-        /* --- SPLIT INFOBAR (Inning & Pitch Matrix) --- */
+        /* --- SPLIT STATUS INFOBAR --- */
         .infobar-row {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 15px;
-            margin-top: 15px;
+            margin-top: 20px;
             border-top: 1px solid #333;
-            padding-top: 15px;
+            padding-top: 20px;
         }
 
         .status-box {
             background: #181818;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            border: 1px solid #2d2d2d;
         }
 
         .status-label {
-            font-size: 11px;
+            font-size: 12px;
             color: #aaa;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
         .status-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
         }
 
         .outs-flex {
             display: flex;
-            gap: 8px;
-            margin-top: 4px;
+            gap: 10px;
+            align-items: center;
+            height: 34px;
         }
 
         .dot {
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: #333;
-            border: 1px solid #555;
+            border: 2px solid #555;
             transition: background 0.1s;
         }
         .dot.active {
             background: #ff3333;
-            box-shadow: 0 0 8px #ff3333;
+            box-shadow: 0 0 10px #ff3333;
+            border-color: #ff9999;
         }
 
-        /* --- BASE RUNNER INTERACTIVE DIAMOND --- */
+        /* --- INTERACTIVE BASE DIAMOND DISPLAY --- */
         .diamond-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 140px;
-            margin: 10px 0;
+            height: 150px;
+            margin: 15px 0;
         }
 
         .diamond-wrapper {
             position: relative;
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             transform: rotate(45deg);
         }
 
         .pad-base {
             position: absolute;
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             background: #333;
             border: 2px solid #555;
-            border-radius: 4px;
-            transition: background 0.1s, transform 0.1s;
+            border-radius: 5px;
+            transition: background 0.1s;
         }
 
         .pad-base.active {
             background: #ffcc00;
             border-color: #fff;
-            box-shadow: 0 0 10px #ffcc00;
+            box-shadow: 0 0 12px #ffcc00;
         }
 
-        /* Shift bases back to their geometric positions */
+        /* Position anchors rotated to match standard fields */
         .pad-base.first  { top: 0; right: 0; transform: rotate(-45deg); }
         .pad-base.second { top: 0; left: 0;  transform: rotate(-45deg); }
         .pad-base.third  { bottom: 0; left: 0; transform: rotate(-45deg); }
 
 
-        /* --- FAT DOCK TOUCH CONTROLS --- */
+        /* --- OPERATION CONTROLS DECK --- */
         .deck-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
         .deck-column {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
         }
 
         .control-block {
-            background: #252525;
-            border-radius: 10px;
-            padding: 12px;
+            background: #222;
+            border-radius: 12px;
+            padding: 15px;
             border: 1px solid #333;
         }
 
         .control-block h3 {
-            font-size: 13px;
-            color: #bbb;
-            margin-bottom: 8px;
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 12px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
         }
 
         .btn-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .btn-row:last-child {
+            margin-bottom: 0;
         }
 
-        /* Massively upscaled button tracking fields for sweaty fingers */
+        /* Fat high-tactile dugout buttons built for immediate taps */
         button {
-            background: #3a3a3a;
+            background: #3e3e3e;
             color: white;
             border: none;
-            padding: 16px 10px;
-            font-size: 16px;
+            padding: 18px 12px;
+            font-size: 18px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
             flex: 1;
-            touch-action: manipulation; /* Eradicates the 300ms touch delay on iPads */
-            box-shadow: 0 3px 0 #222;
+            box-shadow: 0 4px 0 #1a1a1a;
         }
         button:active {
             transform: translateY(2px);
-            box-shadow: 0 1px 0 #222;
+            box-shadow: 0 2px 0 #1a1a1a;
         }
 
-        button.add-btn { background: #2e7d32; box-shadow: 0 3px 0 #1b5e20; }
-        button.add-btn:active { box-shadow: 0 1px 0 #1b5e20; }
+        button.add-btn { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
+        button.add-btn:active { box-shadow: 0 2px 0 #1b5e20; }
 
-        button.sub-btn { background: #c62828; box-shadow: 0 3px 0 #c62828; padding: 12px 10px; font-size: 13px;}
-        button.sub-btn:active { box-shadow: 0 1px 0 #8e1c1c; }
+        button.sub-btn { background: #c62828; box-shadow: 0 4px 0 #8e1c1c; }
+        button.sub-btn:active { box-shadow: 0 2px 0 #8e1c1c; }
 
-        button.base-toggle {
-            background: #444;
-            padding: 14px 5px;
-            font-size: 14px;
-        }
+        button.util-btn { background: #4f5b66; box-shadow: 0 4px 0 #343d46; }
+        button.util-btn:active { box-shadow: 0 2px 0 #343d46; }
 
-        .util-row {
+        .footer-utils {
             grid-column: span 2;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-top: 10px;
         }
-        .util-row button {
-            background: #4f5b66;
-            box-shadow: 0 3px 0 #343d46;
-            padding: 12px;
-            font-size: 13px;
+        .footer-utils button {
+            padding: 16px;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. DISPLAY CONSOLE -->
+    <!-- 1. UPPER DISPLAY CONSOLE -->
     <div class="scoreboard-view">
         <div class="board-grid">
-            <!-- Headers -->
+            <!-- Table Headers -->
             <div class="header-cell" style="text-align: left;">Teams</div>
             <div class="header-cell">Runs</div>
             <div class="header-cell">Hits</div>
-            <div class="header-cell">Err</div>
+            <div class="header-cell">Errors</div>
 
-            <!-- Away Row -->
+            <!-- Away Row Values -->
             <div class="team-title away-color">AWAY</div>
             <div class="digit" id="dispAwayScore">0</div>
             <div class="digit" id="dispAwayHits">0</div>
             <div class="digit" id="dispAwayErrors">0</div>
 
-            <!-- Home Row -->
+            <!-- Home Row Values -->
             <div class="team-title home-color">HOME</div>
             <div class="digit" id="dispHomeScore">0</div>
             <div class="digit" id="dispHomeHits">0</div>
             <div class="digit" id="dispHomeErrors">0</div>
         </div>
 
-        <!-- Lower Metadata Displays -->
+        <!-- Metric Boxes Grid -->
         <div class="infobar-row">
             <div class="status-box">
                 <span class="status-label">Inning</span>
                 <span class="status-value" id="dispInning"><span style="color:#ffcc00">▲</span> 1</span>
             </div>
             <div class="status-box">
-                <span class="status-label">Count</span>
+                <span class="status-label">Count (B - S)</span>
                 <span class="status-value" id="dispCount" style="color:#ffcc00">0 - 0</span>
             </div>
             <div class="status-box">
@@ -279,7 +287,7 @@
         </div>
     </div>
 
-    <!-- 2. GRAPHIC INTERACTIVE BASE RUNNER BLOCK -->
+    <!-- 2. BASE GRAPHIC MAP -->
     <div class="diamond-container">
         <div class="diamond-wrapper">
             <div class="pad-base second" id="padBase2" onclick="toggleBase(2)"></div>
@@ -288,30 +296,25 @@
         </div>
     </div>
 
-    <!-- 3. INPUT OPERATION DECK -->
+    <!-- 3. INTERACTIVE CONTROL ENGINE DECK -->
     <div class="deck-grid">
         
-        <!-- Left Column: Teams Scoring -->
+        <!-- COLUMN 1: TEAMS MATCH PRODUCTION -->
         <div class="deck-column">
+            <!-- Away Panel Controls -->
             <div class="control-block">
-                <h3>Away Adjusters</h3>
+                <h3 class="away-color">Away Team Tracking</h3>
                 <div class="btn-row">
                     <button class="add-btn" onclick="modify('awayScore', 1)">+1 Run</button>
                     <button class="add-btn" onclick="modify('awayHits', 1)">+1 Hit</button>
-                </div>
-                <div class="btn-row" style="margin-top: 8px;">
                     <button class="add-btn" onclick="modify('awayErrors', 1)">+1 Err</button>
-                    <button class="sub-btn" onclick="modify('awayScore', -1)">-1 R</button>
-                    <button class="sub-btn" onclick="modify('awayHits', -1)">-1 H</button>
+                </div>
+                <div class="btn-row">
+                    <button class="sub-btn" onclick="modify('awayScore', -1)">-1 Run</button>
+                    <button class="sub-btn" onclick="modify('awayHits', -1)">-1 Hit</button>
+                    <button class="sub-btn" onclick="modify('awayErrors', -1)">-1 Err</button>
                 </div>
             </div>
 
+            <!-- Home Panel Controls -->
             <div class="control-block">
-                <h3>Home Adjusters</h3>
-                <div class="btn-grid">
-                    <button class="add-btn" onclick="modify('homeScore', 1)">+1 Run</button>
-                    <button class="add-btn" onclick="modify('homeHits', 1)">+1 Hit</button>
-                </div>
-                <div class="btn-row" style="margin-top: 8px;">
-                    <button class="add-btn" onclick="modify('homeErrors', 1)">+1 Err</button>
-                    <button class="sub-btn" onclick="modify('homeScore', -1)">-1 R</button>

@@ -42,11 +42,11 @@
         #bugAway { color: #ff4d4d; }
         #bugHome { color: #3399ff; }
 
-        /* Modified from a 2-column layout to a 3-column layout grid to cleanly host the inning box */
+        /* Your exact working 2-column data row layout */
         .data-row {
             display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             border-top: 1px solid #333;
             padding-top: 15px;
         }
@@ -55,11 +55,11 @@
             background-color: #181818;
             border: 1px solid #2d2d2d;
             border-radius: 8px;
-            padding: 10px 4px;
+            padding: 10px;
         }
 
         .data-label {
-            font-size: 11px;
+            font-size: 12px;
             color: #aaa;
             text-transform: uppercase;
             font-weight: bold;
@@ -67,12 +67,11 @@
         }
 
         .data-value {
-            font-size: 26px;
+            font-size: 32px;
             font-weight: bold;
-            color: #ffffff;
+            color: #ffcc00;
             font-family: 'Impact', 'Arial Black', sans-serif;
         }
-        .yellow-text { color: #ffcc00; }
 
 
         /* --- 2. THE CONTROL PANEL CONTAINER --- */
@@ -139,10 +138,10 @@
             box-shadow: 0 2px 0 #1a1a1a;
         }
 
-        button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
         button.plus-ball { background: #5e35b1; box-shadow: 0 4px 0 #4527a0; }
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
+        button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
         button.sub-btn { background: #c62828; box-shadow: 0 4px 0 #8e1c1c; padding: 12px 10px; font-size: 14px;}
         button.clear-btn { background: #4f5b66; box-shadow: 0 4px 0 #343d46; padding: 12px 10px; font-size: 14px;}
     </style>
@@ -151,23 +150,18 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Your exact, flat, original team name rows -->
         <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
         <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
         
         <div class="data-row">
-            <!-- New safe box to show current Inning number and half arrow -->
-            <div class="data-box">
-                <div class="data-label">Inning</div>
-                <div class="data-value" id="dispInning">▲ 1</div>
-            </div>
             <div class="data-box">
                 <div class="data-label">Count (B - S)</div>
-                <div class="data-value yellow-text" id="dispCount">0 - 0</div>
+                <div class="data-value" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
-                <div class="data-label">Outs</div>
-                <div class="data-value yellow-text" id="dispOuts">0</div>
+                <!-- Kept your original box, just showing Inning on the left and Outs on the right -->
+                <div class="data-label">Inning / Outs</div>
+                <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
             </div>
         </div>
     </div>
@@ -236,8 +230,9 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions across variables safely
+        // Handles additions and subtractions for Balls, Strikes, and Outs safely
         function adjustCount(field, value) {
+            // Adjust the value, but never let it go below 0
             game[field] = Math.max(0, game[field] + value);
 
             // Softball Rule Automations:
@@ -272,7 +267,7 @@
         // Pushes state variables into the visible HTML layout elements safely
         function renderDisplay() {
             document.getElementById('dispInning').innerHTML = (game.isInningTop ? '▲' : '▼') + ' ' + game.inning;
-            document.getElementById('dispCount').innerText = game.balls + ' - ' + game.strikes;
+            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
             document.getElementById('dispOuts').innerText = game.outs;
         }
 

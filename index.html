@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Team, Count, Inning & Run Tracker</title>
+    <title>Team & Count Tracker</title>
     <style>
         /* --- CORE STANDALONE IPAD OPTIMIZATIONS --- */
         * {
@@ -34,7 +34,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* Your exact working team lines style */
         .team-line {
             font-size: 24px;
             font-weight: bold;
@@ -152,12 +151,9 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <!-- Safely appending plain text placeholders for Runs right into your un-nested text lines -->
+        <!-- Your exact original team lines, safely adding flat runs markers -->
         <div class="team-line">AWAY: <span id="bugAway">TEAM A</span> — RUNS: <span id="dispAwayRuns" style="color: #ffcc00;">0</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns" style="color: #ffcc00;">0</span></div>
-        <div class="team-line" style="font-size: 20px; color: #aaa; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
-            INNING: <span id="dispInning" style="color: #ffcc00;">▲ 1</span>
-        </div>
+        <div class="team-line">HOME: <span id="bugHome">TEAM B</span> — RUNS: <span id="dispHomeRuns">0</span></div>
         
         <div class="data-row">
             <div class="data-box">
@@ -165,8 +161,9 @@
                 <div class="data-value" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
-                <div class="data-label">Outs</div>
-                <div class="data-value" id="dispOuts">0</div>
+                <!-- Your exact working second box, displaying Inning on the left and Outs on the right -->
+                <div class="data-label">Inning / Outs</div>
+                <div class="data-value"><span id="dispInning" style="color: #ffffff;">▲ 1</span> — <span id="dispOuts">0</span></div>
             </div>
         </div>
     </div>
@@ -236,7 +233,7 @@
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object extended cleanly with run trackers
+        // Data State Object safely extended with inning and run trackers
         let game = {
             balls: 0,
             strikes: 0,
@@ -255,7 +252,7 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions across variables safely with no typos
+        // Handles additions and subtractions safely with no typos
         function adjustCount(field, value) {
             game[field] = Math.max(0, game[field] + value);
 
@@ -278,6 +275,13 @@
         // Toggles between Top (▲) and Bottom (▼) half-innings
         function toggleInningHalf() {
             game.isInningTop = !game.isInningTop;
+            renderDisplay();
+        }
+
+        // Manual Clear Count button helper
+        function clearCount() {
+            game.balls = 0;
+            game.strikes = 0;
             renderDisplay();
         }
 

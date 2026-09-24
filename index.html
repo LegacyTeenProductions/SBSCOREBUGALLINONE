@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Team & Count Tracker</title>
+    <title>Team, Count & Run Tracker</title>
     <style>
         /* --- CORE STANDALONE IPAD OPTIMIZATIONS --- */
         * {
@@ -34,32 +34,54 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
+        /* Grid to cleanly separate team names and score displays */
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
         .team-line {
             font-size: 24px;
             font-weight: bold;
-            margin: 5px 0 15px 0;
+            text-align: left;
         }
         #bugAway { color: #ff4d4d; }
         #bugHome { color: #3399ff; }
 
-        /* The Data Display Row (Count & Outs) */
+        .run-digit {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 32px;
+            background-color: #000;
+            color: #ffcc00;
+            padding: 2px 14px;
+            border-radius: 6px;
+            border: 1px solid #2d2d2d;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* The Data Display Row (Inning, Count & Outs) */
         .data-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 10px;
             border-top: 1px solid #333;
             padding-top: 15px;
+            margin-top: 15px;
         }
 
         .data-box {
             background-color: #181818;
             border: 1px solid #2d2d2d;
             border-radius: 8px;
-            padding: 10px;
+            padding: 10px 4px;
         }
 
         .data-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #aaa;
             text-transform: uppercase;
             font-weight: bold;
@@ -67,11 +89,12 @@
         }
 
         .data-value {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: bold;
-            color: #ffcc00;
+            color: #ffffff;
             font-family: 'Impact', 'Arial Black', sans-serif;
         }
+        .yellow-text { color: #ffcc00; }
 
 
         /* --- 2. THE CONTROL PANEL CONTAINER --- */
@@ -138,6 +161,8 @@
             box-shadow: 0 2px 0 #1a1a1a;
         }
 
+        button.plus-run { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
+        button.plus-inning { background: #00796b; box-shadow: 0 4px 0 #004d40; }
         button.plus-ball { background: #5e35b1; box-shadow: 0 4px 0 #4527a0; }
         button.plus-strike { background: #1565c0; box-shadow: 0 4px 0 #0d47a1; }
         button.plus-out { background: #ef6c00; box-shadow: 0 4px 0 #b30000; }
@@ -149,17 +174,27 @@
 
     <!-- 1. THE SCOREBUG VISUAL BOX -->
     <div class="scorebug-display">
-        <div class="team-line">AWAY: <span id="bugAway">TEAM A</span></div>
-        <div class="team-line">HOME: <span id="bugHome">TEAM B</span></div>
+        <div class="team-grid">
+            <div class="team-line away-color">AWAY: <span id="bugAway">TEAM A</span></div>
+            <div class="run-digit" id="dispAwayRuns">0</div>
+        </div>
+        <div class="team-grid">
+            <div class="team-line home-color">HOME: <span id="bugHome">TEAM B</span></div>
+            <div class="run-digit" id="dispHomeRuns">0</div>
+        </div>
         
         <div class="data-row">
             <div class="data-box">
+                <div class="data-label">Inning</div>
+                <div class="data-value" id="dispInning">▲ 1</div>
+            </div>
+            <div class="data-box">
                 <div class="data-label">Count (B - S)</div>
-                <div class="data-value" id="dispCount">0 - 0</div>
+                <div class="data-value yellow-text" id="dispCount">0 - 0</div>
             </div>
             <div class="data-box">
                 <div class="data-label">Outs</div>
-                <div class="data-value" id="dispOuts">0</div>
+                <div class="data-value yellow-text" id="dispOuts">0</div>
             </div>
         </div>
     </div>
@@ -174,6 +209,34 @@
             <input type="text" id="inputHome" value="TEAM B" oninput="updateNames()" placeholder="Home Name...">
         </div>
 
+        <!-- Section: Away Runs -->
+        <div class="panel-section">
+            <h3 class="away-color">Away Team Runs</h3>
+            <div class="btn-row">
+                <button class="plus-run" onclick="adjustCount('awayRuns', 1)">+1 Run</button>
+                <button class="sub-btn" onclick="adjustCount('awayRuns', -1)">-1 Run</button>
+            </div>
+        </div>
+
+        <!-- Section: Home Runs -->
+        <div class="panel-section">
+            <h3 class="home-color">Home Team Runs</h3>
+            <div class="btn-row">
+                <button class="plus-run" onclick="adjustCount('homeRuns', 1)">+1 Run</button>
+                <button class="sub-btn" onclick="adjustCount('homeRuns', -1)">-1 Run</button>
+            </div>
+        </div>
+
+        <!-- Section: Innings -->
+        <div class="panel-section">
+            <h3>Innings</h3>
+            <div class="btn-row">
+                <button class="plus-inning" onclick="adjustCount('inning', 1)">+1 Inning</button>
+                <button class="sub-btn" onclick="adjustCount('inning', -1)">-1 Inning</button>
+                <button class="clear-btn" onclick="toggleInningHalf()">Top / Bot</button>
+            </div>
+        </div>
+
         <!-- Section: At Bat Trackers -->
         <div class="panel-section">
             <h3>At Bat Trackers</h3>
@@ -183,7 +246,7 @@
             </div>
             <div class="btn-row">
                 <button class="sub-btn" onclick="adjustCount('balls', -1)">-1 Ball</button>
-                <button class="sub-btn" onclick="adjustCount('strikes', -1)">-1 Strike</button>
+                <button class="sub-btn" onclick="adjustGame('strikes', -1)">-1 Strike</button>
                 <button class="clear-btn" onclick="clearCount()">Clear Count</button>
             </div>
         </div>
@@ -197,15 +260,24 @@
             </div>
         </div>
 
+        <!-- Section: Global Reset -->
+        <div class="btn-row" style="margin-top: 20px;">
+            <button class="sub-btn" style="background: #b71c1c; box-shadow: 0 4px 0 #5f0909; padding: 15px;" onclick="resetWholeGame()">Reset Match</button>
+        </div>
+
     </div>
 
     <!-- 3. THE SCRIPT ENGINE -->
     <script>
-        // Data State Object
+        // Expanded Data State Object
         let game = {
             balls: 0,
             strikes: 0,
-            outs: 0
+            outs: 0,
+            awayRuns: 0,
+            homeRuns: 0,
+            inning: 1,
+            isInningTop: true
         };
 
         // Syncs the typing text inputs to the scoreboard labels
@@ -216,46 +288,3 @@
             document.getElementById('bugHome').innerText = homeVal || 'HOME';
         }
 
-        // Handles additions and subtractions for Balls, Strikes, and Outs
-        function adjustCount(field, value) {
-            // Adjust the value, but never let it go below 0
-            game[field] = Math.max(0, game[field] + value);
-
-            // Softball Rule Automations:
-            // 1. If Outs reach 3, reset outs to 0 and wipe the ball/strike count
-            if (field === 'outs' && game.outs >= 3) {
-                game.outs = 0;
-                game.balls = 0;
-                game.strikes = 0;
-            }
-            // 2. If Balls reach 4, roll back to 0 (Walk)
-            if (field === 'balls' && game.balls >= 4) {
-                game.balls = 0;
-            }
-            // 3. If Strikes reach 3, roll back to 0 (Strikeout)
-            if (field === 'strikes' && game.strikes >= 3) {
-                game.strikes = 0;
-            }
-
-            renderDisplay();
-        }
-
-        // Manual Clear Count button helper
-        function clearCount() {
-            game.balls = 0;
-            game.strikes = 0;
-            renderDisplay();
-        }
-
-        // Pushes state variables into the visible HTML layout elements
-        function renderDisplay() {
-            document.getElementById('dispCount').innerText = `${game.balls} - ${game.strikes}`;
-            document.getElementById('dispOuts').innerText = game.outs;
-        }
-
-        // Run an initial render on page load so numbers aren't blank
-        renderDisplay();
-    </script>
-
-</body>
-</html>
